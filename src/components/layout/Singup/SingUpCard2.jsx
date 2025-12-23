@@ -45,10 +45,10 @@ const SingUpCard2 = ({txt,children}) => {
           ClubHub
         </h2>
         <div className="mx-auto flex flex-col gap-3">
-          <p className="font-extralight text-center text-[32px]">Sing {txt} to continue</p>
+          <p className="font-extralight text-center text-[32px]">Sign {txt} to continue</p>
           <div className="mx-auto">
-          <button className="btn btn-primary rounded-2xl px-10">
-            <Link to="/auth">Sing {txt} with Google</Link>
+          <button onClick={onGoogleLogin} className="btn btn-primary rounded-2xl px-10">
+             Sign {txt} with Google
           </button>
           </div>
           <p className="font-light mt-3">

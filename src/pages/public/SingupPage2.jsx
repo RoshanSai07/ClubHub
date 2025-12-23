@@ -11,7 +11,7 @@ const SingupPage2 = () => {
     <div className="relative z-10"><SingUpCard2 txt="up">
         <p className="text-center font-light">
             Already have an account ?
-            <Link to="/login" className="text-blue-500"> Login</Link>
+            <Link to="/login" className="text-blue-500"> {" "}Login</Link>
           </p>
     </SingUpCard2>
    </div>
