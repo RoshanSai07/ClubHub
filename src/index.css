@@ -170,24 +170,30 @@
   --color-red-950: #3f1010;
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
-.no-scrollbar {
-  -ms-overflow-style: none;  /* IE & Edge */
-  scrollbar-width: none;     /* Firefox */
+@layer components {
+  .menu li > a:hover,
+  .menu li > a:focus,
+  .menu li > a:active,
+  .menu li > *:hover,
+  .menu li > *:focus,
+  .menu li > *:active {
+    background-color: transparent !important;
+  }
+  
+  .navbar .menu li > a:hover,
+  .navbar .menu li > a:active,
+  .navbar .menu li > *:hover,
+  .navbar .menu li > *:active {
+    background-color: transparent !important;
+  }
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  *{
-    font-family:var(--font-inter);
-    font-size:20px;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+  * { @apply border-border; font-family: var(--font-inter); font-size: 20px; }
+  body { @apply bg-background text-foreground antialiased; }
 }
