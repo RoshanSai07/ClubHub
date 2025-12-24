@@ -1,14 +1,15 @@
-import React from 'react'
-import Navbar from '../landing/Navbar'
+import Navbar from '../DashboardS/Navbar'
 import FooterPage from '../landing/FooterPage'
+import { Outlet } from 'react-router-dom'
 
 const DashboardLayout = () => {
   return (
-    <div>
-     <Navbar />
-     <footer>
-        <FooterPage/>
-        </footer> 
+    <div className="min-h-screen flex flex-col h-screen overflow-y-scroll no-scrollbar">
+      <Navbar />
+      <main>
+        <Outlet />
+      </main>
+      <FooterPage />
     </div>
   )
 }
