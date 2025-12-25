@@ -3,7 +3,7 @@ import React from "react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-const SingUpCard1 = () => {
+const SignUpCard1 = () => {
     const [user,setUser]=useState("");
     const [showToast,setShowToast]=useState(false);
     const handleBtnClick=(u)=>{
@@ -61,7 +61,7 @@ const SingUpCard1 = () => {
             <button onClick={()=>handleBtnClick("Admin")} className="text-red-500 active:bg-red-500/25 p-2 active:rounded-2xl cursor-pointer ">Admin</button>
           </div>
           <div className=" mx-auto">
-            <button className="btn btn-primary rounded-2xl w-32"><Link to="/singup1">Continue</Link></button>
+            <button className="btn btn-primary rounded-2xl w-32"><Link to="/signup2">Continue</Link></button>
           </div>
         </div>
       </div>
@@ -69,4 +69,4 @@ const SingUpCard1 = () => {
   );
 };
 
-export default SingUpCard1;
+export default SignUpCard1;

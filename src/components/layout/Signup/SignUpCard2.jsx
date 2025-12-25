@@ -2,8 +2,20 @@
 import React from "react";
 
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { googleSignIn } from "@/firebase/auth";
 
-const SingUpCard2 = ({txt,onGoogleLogin,children}) => {
+const SingUpCard2 = ({txt,children}) => {
+  const navigate = useNavigate();
+   const handleGoogleLogin = async () =>{
+    try{
+      const user = await googleSignIn();
+      navigate(`/${user.role}`); // student / club / admin
+
+    }catch(err){
+      console.error("Login failed : " ,err);
+    }
+  }
   return (
     <div className="min-h-screen flex items-center justify-center min-w-screen">
       <div className="card w-176 h-100 bg-base-100 card-xl shadow-sm flex items-center justify-center gap-6">
@@ -46,10 +58,10 @@ const SingUpCard2 = ({txt,onGoogleLogin,children}) => {
         </h2>
         <div className="mx-auto flex flex-col gap-3">
           <p className="font-extralight text-center text-[32px]">Sign {txt} to continue</p>
-          {onGoogleLogin && (
+          {(
             <div className="mx-auto">
               <button
-                onClick={onGoogleLogin}
+                onClick={handleGoogleLogin}
                 className="btn btn-primary rounded-2xl px-10"
               >
                 Sign {txt} with Google
