@@ -23,7 +23,7 @@ import { getUpcomingEvents } from '@/firebase/collections'
 
 const Upcoming = () =>{
   const [events, setEvents] = useState([]);
-  const [loading, Fding] = useState(true);
+  const [loading, setLoading] = useState(true);
   useEffect(()=>{
     const fetchEvents = async ()=>{
       const data = await getUpcomingEvents();
