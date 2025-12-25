@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom'; // 1. Import Navigation Hook
 import EventCard from '@/components/shared/eventCard';
 import { getUpcomingEvents } from '@/firebase/collections';
 const UpcomingEventsSection = () => {
@@ -21,10 +22,8 @@ const UpcomingEventsSection = () => {
   //   { id: 17, type: "Coding", club: "Coding Club", theme: "blue", title: "LeetCode Grind", description: "Solving hard problems together.", date: "18/02/2026", image: null },
   //   { id: 18, type: "Seminar", club: "Future Leaders", theme: "yellow", title: "Future of Work", description: "How AI is changing job markets.", date: "20/02/2026", image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=500&q=60" },
   // ];
+  const navigate = useNavigate(); // 2. Initialize Navigation
 
-  //Fetching Firestore data
-  
-  
 
   // 2. STATE MANAGEMENT
   const [searchTerm, setSearchTerm] = useState('');
@@ -37,7 +36,7 @@ const UpcomingEventsSection = () => {
   const [clubFilter, setClubFilter] = useState('');
   
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6; 
+  const itemsPerPage = 9; // 3. UPDATED to 9 items (3x3 grid)
 
   //Fetching firestore users
   useEffect(()=>{
@@ -69,16 +68,13 @@ const UpcomingEventsSection = () => {
     // Club Logic
     const matchesClub = clubFilter === '' || event.clubname === clubFilter;
 
-    // Date Logic (Compare if event is AFTER or EQUAL to selected date)
+    // Date Logic
     let matchesDate = true;
     if (dateFilter) {
-      // Convert "DD/MM/YYYY" to JS Date Object
       const [day, month, year] = event.date.split('/');
-      // Note: Month is 0-indexed in JS Date
       const eventDateObj = new Date(year, month - 1, day);
       const filterDateObj = new Date(dateFilter);
       
-      // Reset hours to ensure pure date comparison
       eventDateObj.setHours(0,0,0,0);
       filterDateObj.setHours(0,0,0,0);
 
@@ -94,7 +90,7 @@ const UpcomingEventsSection = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentEvents = filteredEvents.slice(indexOfFirstItem, indexOfLastItem);
 
-  // Reset to page 1 whenever filters change
+  // Reset to page 1
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, dateFilter, typeFilter, clubFilter]);
@@ -135,7 +131,7 @@ const UpcomingEventsSection = () => {
           </button>
         </div>
       </div>
-
+      
       {/* MAIN CONTAINER */}
       <div className="bg-white rounded-3xl p-10 shadow-sm border border-gray-100">
         
@@ -147,14 +143,7 @@ const UpcomingEventsSection = () => {
           
           {/* Filter Controls Group */}
           <div className="flex flex-col sm:flex-row gap-4 w-full xl:w-auto items-center">
-            {(dateFilter || typeFilter || clubFilter) && (
-              <button 
-                onClick={clearFilters}
-                className="text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors"
-              >
-                All
-              </button>
-            )}
+            
             {/* 1. Date Picker */}
             <div className="relative w-full sm:w-auto">
                <input 
@@ -175,7 +164,7 @@ const UpcomingEventsSection = () => {
                 onChange={(e) => setTypeFilter(e.target.value)}
                 className="appearance-none w-full sm:w-40 pl-4 pr-10 py-2 bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                <option value="">Type</option>
+                <option value="">Any Type</option>
                 {eventTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
@@ -190,9 +179,9 @@ const UpcomingEventsSection = () => {
               <select 
                 value={clubFilter}
                 onChange={(e) => setClubFilter(e.target.value)}
-                className="appearance-none sm:w-48 pl-4 pr-10 py-2 bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
+                className="appearance-none w-full sm:w-48 pl-4 pr-10 py-2 bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                <option value="">Club</option>
+                <option value="">Any Club</option>
                 {clubNames.map(club => (
                   <option key={club} value={club}>{club}</option>
                 ))}
@@ -203,7 +192,14 @@ const UpcomingEventsSection = () => {
             </div>
 
             {/* Clear Filters Link */}
-            
+            {(dateFilter || typeFilter || clubFilter) && (
+              <button 
+                onClick={clearFilters}
+                className="text-sm text-gray-500 hover:text-gray-800 font-medium underline decoration-gray-300 underline-offset-4 transition-colors"
+              >
+                Clear all
+              </button>
+            )}
           </div>
         </div>
 
@@ -211,7 +207,11 @@ const UpcomingEventsSection = () => {
         {currentEvents.length > 0 ? (
           <div className="flex flex-wrap gap-12 mb-12 px-4">
             {currentEvents.map((event) => (
-              <div key={event.clubId}>
+              <div 
+                key={event.id}
+                onClick={() => navigate(`/student/events/${event.id}`)} // 4. Navigation Handler
+                className="cursor-pointer transition-transform hover:scale-[1.01] duration-200"
+              >
                 <EventCard 
                   {...event}
                   variant="details"

@@ -53,7 +53,7 @@ const Navbar = () => {
          <ButtonOutline text="Login" url="/login"></ButtonOutline>
           </li>
           <li>
-           <ButtonBg text="Join Platform" url="/singup" className="background-blue-"></ButtonBg>
+           <ButtonBg text="Join Platform" url="/signup1" className="background-blue-"></ButtonBg>
           </li>
         </ul>
       </div>
