@@ -23,11 +23,12 @@ import { getUpcomingEvents } from '@/firebase/collections'
 
 const Upcoming = () =>{
   const [events, setEvents] = useState([]);
-  const [loading, Fding] = useState(true);
+  const [loading, setLoading] = useState(true);
   useEffect(()=>{
     const fetchEvents = async ()=>{
       const data = await getUpcomingEvents();
       setEvents(data.slice(0,4));
+      //console.log(data.slice(0,4));
       setLoading(false);
     };
     fetchEvents();
@@ -45,7 +46,7 @@ const Upcoming = () =>{
       <span className="font-semibold text-[36px]">UPCOMING EVENTS</span>
       <div className="flex flex-wrap gap-4">
         {
-          events.map((event)=>{
+          events.map((event)=>(
             <CardFeature
               key = {event.clubId}
               img = {event.image}
@@ -55,7 +56,7 @@ const Upcoming = () =>{
               eventDate={event.date}
             />
 
-          })
+          ))
         }
       </div>
     </div>
