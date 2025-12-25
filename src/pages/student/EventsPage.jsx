@@ -214,6 +214,7 @@ const UpcomingEventsSection = () => {
               >
                 <EventCard 
                   {...event}
+                  
                   variant="details"
                 />
               </div>

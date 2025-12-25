@@ -146,6 +146,8 @@ const StudentDashboard = () => {
           <EventCard 
             key={event.id}
             {...event}
+            path={`/student/events/${event.id}`}
+
           />
         ))}
       </div>

@@ -1,5 +1,6 @@
 import { Upload ,Plus,ListChecks,ClipboardEdit,Building2,CalendarClock} from "lucide-react";
 import { useForm, useFieldArray } from "react-hook-form";
+import { useNavigate } from "react-router";
 
 export default function CreateEventPage() {
   const {
@@ -48,12 +49,16 @@ export default function CreateEventPage() {
     console.log("EVENT JSON (send to Firebase):");
     console.log(JSON.stringify(eventPayload, null, 2));
   };
+  const navigate=useNavigate();
+  const handleBack=()=>{
+    navigate(-1);
+  }
 
   return (
     <div className="bg-[#f8f9fa]">
     {/* Header */}
       <div className="flex justify-between items-center bg-white p-4 border-b shadow-sm top-0 sticky">
-        <button type="button" className="">
+        <button type="button" className="" onClick={handleBack}>
           ← Back
         </button>
 

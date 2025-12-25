@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import EventCard from '@/components/shared/eventCard';
-
 const RecommendedSection = () => {
   // 1. DEFINE REF
   const scrollContainerRef = useRef(null);
@@ -8,7 +7,7 @@ const RecommendedSection = () => {
   // Mock Data
   const recommendations = [
     {
-      id: 101,
+      id: 1,
       type: "Concert",
       theme: "yellow", // Matches image Yellow badge
       title: "Summer Vibes",
@@ -16,7 +15,7 @@ const RecommendedSection = () => {
       date: "25/12/2025"
     },
     {
-      id: 102,
+      id: 2,
       type: "Art",
       theme: "red", // Matches image Red badge
       title: "Modern Art Expo",
@@ -24,7 +23,7 @@ const RecommendedSection = () => {
       date: "28/12/2025"
     },
     {
-      id: 103,
+      id: 3,
       type: "Tech",
       theme: "blue", // Matches image Blue badge
       title: "Robotics 101",
@@ -32,7 +31,7 @@ const RecommendedSection = () => {
       date: "05/01/2026"
     },
     {
-      id: 104,
+      id: 4,
       type: "Sports",
       theme: "green", // Matches image Green badge
       title: "Inter-College Cricket",
@@ -40,7 +39,7 @@ const RecommendedSection = () => {
       date: "12/01/2026"
     },
     {
-      id: 105,
+      id: 5,
       type: "Music",
       theme: "yellow",
       title: "Jazz Night",
@@ -96,12 +95,13 @@ const RecommendedSection = () => {
         ref={scrollContainerRef} // <--- Don't forget this!
         className="flex overflow-x-auto gap-6 pb-8 snap-x snap-mandatory scroll-smooth hide-scrollbar"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-      >
+        >
         {recommendations.map((event) => (
           <EventCard 
-            key={event.clubId}
+            key={event.id}
             {...event}
-            variant="details" // <--- THIS SWITCHES THE UI TO ARROW STYLE
+            variant="details" 
+            path={`/student/events/${event.id}`}
           />
         ))}
       </div>

@@ -50,6 +50,7 @@ export const mockEvents = [
     type: "Technical",
     theme: "yellow",
     image: "",
+    registeredMembers:100,
   },
   {
     id: 2,
@@ -59,6 +60,7 @@ export const mockEvents = [
     type: "Workshop",
     theme: "blue",
     image: "",
+    registeredMembers:100
   },
   {
     id: 3,
@@ -68,6 +70,7 @@ export const mockEvents = [
     type: "Competition",
     theme: "yellow",
     image: "",
+    registeredMembers:100,
   },
   {
     id: 4,
@@ -77,6 +80,7 @@ export const mockEvents = [
     type: "Bootcamp",
     theme: "blue",
     image: "",
+    registeredMembers:100,
   },
 ];
 
@@ -154,6 +158,7 @@ const ClubDashboard = () => {
                 type={event.type}
                 theme="yellow"
                 image={event.img}
+                registeredMembers={event.registeredMembers}
               />
             ))
           ) : (

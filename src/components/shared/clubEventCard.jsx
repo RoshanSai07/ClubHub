@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const getThemeClasses = (theme) => {
   const variants = {
@@ -9,7 +10,8 @@ const getThemeClasses = (theme) => {
     blue: {
       badge: "bg-blue-100 text-blue-800",
       edit: "bg-red-100 text-red-600",
-    },
+    },  
+
   };
   return variants[theme] || variants.yellow;
 };
@@ -21,11 +23,13 @@ const ClubEventCard = ({
   type,
   theme = "yellow",
   image,
+  id,
+  registeredMembers
 }) => {
   const colors = getThemeClasses(theme);
    
   return (
-    <div className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center hover:shadow-md h-85">
+    <div className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center  h-85 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group  cursor-pointer">
 
       {/* Image Section */}
       <div className="relative h-[50%] bg-gray-50 flex items-center justify-center border-b">
@@ -71,17 +75,19 @@ const ClubEventCard = ({
         </p>
 
         <p className="text-sm text-gray-500">
-          Registered Users: --
+          Registered Users:{registeredMembers}
         </p>
       </div>
 
       {/* Footer */}
       <div className="px-4 border-t flex mt-2 pt-2 justify-between">
+        <Link to={`/club/edit-event/${id}`}>
         <button
           className={`px-10 py-1.5 rounded text-sm ${colors.edit}`}
         >
           Edit
         </button>
+        </Link>
 
         <button className="p-2 rounded-full hover:bg-blue-50 transition">
           <svg
