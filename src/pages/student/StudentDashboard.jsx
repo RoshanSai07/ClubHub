@@ -11,75 +11,81 @@ import { auth } from '@/firebase/firebase'
 
 const StudentDashboard = () => {
 
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);   
+  // const [events, setEvents] = useState([]);
+  // const [loading, setLoading] = useState(true);   
 
   
   const handleFeedback=()=>{
      return <h1>FeedBack form</h1>
   }
   const scrollContainerRef = useRef(null);
-  // const events = [
-  //   {
-  //     id: 1,
-  //     type: "Workshop",
-  //     theme: "yellow",
-  //     title: "Intro to UI/UX",
-  //     description: "A deep dive into user interface principles.",
-  //     date: "12/10/2025"
-  //   },
-  //   {
-  //     id: 2,
-  //     type: "Hackathon",
-  //     theme: "red",
-  //     title: "CodeRed 2025",
-  //     description: "24-hour coding marathon for developers.",
-  //     date: "15/10/2025"
-  //   },
-  //   {
-  //     id: 3,
-  //     type: "Seminar",
-  //     theme: "blue",
-  //     title: "AI in 2029",
-  //     description: "Discussing the future of Generative AI.",
-  //     date: "20/11/2025"
-  //   },
-  //   {
-  //     id: 4,
-  //     type: "Meetup",
-  //     theme: "green",
-  //     title: "Green Tech",
-  //     description: "Networking event for sustainable tech enthusiasts.",
-  //     date: "05/12/2025"
-  //   },
-  //   {
-  //     id: 5,
-  //     type: "Workshop",
-  //     theme: "yellow",
-  //     title: "Advanced React",
-  //     description: "Scaling applications in enterprise environments.",
-  //     date: "10/01/2026"
-  //   }
-  // ];
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        console.log("No user logged in yet");
-        return;
-      }
+ const events = [
+  {
+    id: 1,
+    type: "Workshop",
+    theme: "yellow",
+    title: "Intro to UI/UX",
+    description: "A deep dive into user interface principles.",
+    date: "12/10/2025",
+    isRegistered: false,
+  },
+  {
+    id: 2,
+    type: "Hackathon",
+    theme: "red",
+    title: "CodeRed 2025",
+    description: "24-hour coding marathon for developers.",
+    date: "15/10/2025",
+    isRegistered: true,
+  },
+  {
+    id: 3,
+    type: "Seminar",
+    theme: "blue",
+    title: "AI in 2029",
+    description: "Discussing the future of Generative AI.",
+    date: "20/11/2025",
+    isRegistered: false,
+  },
+  {
+    id: 4,
+    type: "Meetup",
+    theme: "green",
+    title: "Green Tech",
+    description: "Networking event for sustainable tech enthusiasts.",
+    date: "05/12/2025",
+    isRegistered: true,
+  },
+  {
+    id: 5,
+    type: "Workshop",
+    theme: "yellow",
+    title: "Advanced React",
+    description: "Scaling applications in enterprise environments.",
+    date: "10/01/2026",
+    isRegistered: false,
+  },
+];
 
-      console.log("User ready:", user.uid);
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, async (user) => {
+  //     if (!user) {
+  //       console.log("No user logged in yet");
+  //       return;
+  //     }
 
-      const data = await getStudentPastEvents(user.uid);
-      console.log("Fetched events:", data);
-      setEvents(data);
-      setLoading(false);
-    });
-      return () => unsubscribe(); // cleanup on unmount
-  }, []);
-  if(loading){
-    return<p className="p-10">Loading past events...</p>;
-  }
+  //     console.log("User ready:", user.uid);
+
+  //     const data = await getStudentPastEvents(user.uid);
+  //     console.log("Fetched events:", data);
+  //     setEvents(data);
+  //     setLoading(false);
+  //   });
+  //     return () => unsubscribe(); // cleanup on unmount
+  // }, []);
+  // if(loading){
+  //   return<p className="p-10">Loading past events...</p>;
+  // }
 
  // Scroll 
   const scroll = (direction) => {
@@ -93,7 +99,7 @@ const StudentDashboard = () => {
   };
   return (
    <div className="mt-18 pt-10 flex flex-col gap-10 bg-[#f2f2f2] ">
-    <div className="one pl-10 ">
+    <div className="one pl-10">
       <p className="font-semibold text-[32px]">Welcome back, <span className="text-blue-500 font-semibold text-[32px]">user</span></p>
       <p>Explore your upcoming events and give feedback on your past events</p>
     </div>
@@ -111,10 +117,31 @@ const StudentDashboard = () => {
         <span className="font-light">Club Hiring</span>
        </div>
     </div>
+    <div className="p-6">
+      <section className="max-w-7xl mx-auto px-6 py-5">
+
+      <div className="flex items-center justify-between mb-6 bg-white-500">
+        <h2 className="text-[24px] font-bold text-gray-900 tracking-wide">
+          REGISTERED EVENTS
+        </h2>
+        </div>
+        <div className="flex flex-wrap gap-6 ">
+           {events.map((event) => (
+         event.isRegistered && <EventCard 
+            key={event.id}
+            {...event}
+            path={`/student/events/${event.id}`}
+
+          />
+        ))}
+        </div>
+      </section>
+    </div>
+    <div className="four px-6 bg-white">
+      <RecommendedSection />
+    </div>
     <div className="three p-6">
-     <section className="max-w-7xl mx-auto px-6 py-10">
-      
-      {/* Header Section */}
+     <section className="max-w-7xl mx-auto px-6 py-5">
       <div className="flex items-center justify-between mb-6 bg-white-500">
         <h2 className="text-[24px] font-bold text-gray-900 tracking-wide">
           MY PAST EVENTS
@@ -143,7 +170,7 @@ const StudentDashboard = () => {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {events.map((event) => (
-          <EventCard 
+         !event.isRegistered && <EventCard 
             key={event.id}
             {...event}
             path={`/student/events/${event.id}`}
@@ -158,9 +185,7 @@ const StudentDashboard = () => {
       </div>
     </section>
     </div>
-    <div className="four">
-      <RecommendedSection />
-    </div>
+    
    </div>
   )
 }

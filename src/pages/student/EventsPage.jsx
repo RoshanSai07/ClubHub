@@ -69,17 +69,37 @@ const UpcomingEventsSection = () => {
     const matchesClub = clubFilter === '' || event.clubname === clubFilter;
 
     // Date Logic
-    let matchesDate = true;
-    if (dateFilter) {
-      const [day, month, year] = event.date.split('/');
-      const eventDateObj = new Date(year, month - 1, day);
-      const filterDateObj = new Date(dateFilter);
-      
-      eventDateObj.setHours(0,0,0,0);
-      filterDateObj.setHours(0,0,0,0);
+    // Date Logic (FIXED)
+let matchesDate = true;
 
-      matchesDate = eventDateObj >= filterDateObj;
-    }
+if (dateFilter) {
+  const filterDateObj = new Date(dateFilter);
+  filterDateObj.setHours(0, 0, 0, 0);
+
+  let eventDateObj;
+
+  // CASE 1: Firestore Timestamp
+  if (event.date?.seconds) {
+    eventDateObj = new Date(event.date.seconds * 1000);
+  }
+  // CASE 2: ISO string (YYYY-MM-DD)
+  else if (typeof event.date === "string" && event.date.includes("-")) {
+    eventDateObj = new Date(event.date);
+  }
+  // CASE 3: DD/MM/YYYY
+  else if (typeof event.date === "string" && event.date.includes("/")) {
+    const [day, month, year] = event.date.split("/");
+    eventDateObj = new Date(year, month - 1, day);
+  } else {
+    matchesDate = true; // fallback
+  }
+
+  if (eventDateObj) {
+    eventDateObj.setHours(0, 0, 0, 0);
+    matchesDate = eventDateObj >= filterDateObj;
+  }
+}
+
     
     return matchesSearch && matchesType && matchesClub && matchesDate;
   });

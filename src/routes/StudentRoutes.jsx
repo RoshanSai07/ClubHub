@@ -16,9 +16,10 @@ export default function StudentRoutes() {
         <Route path="clubs" element={<ClubInfo/>} />
         <Route path="events" element={<EventPage />}>
         </Route>
-        <Route path="profile" element={<ProfilePage />} />
+        
       </Route>
        <Route path="events/:id" element={<EventDetailsPage/>}/>
+       <Route path="profile" element={<ProfilePage />} />
     </Routes>
   );
 }
