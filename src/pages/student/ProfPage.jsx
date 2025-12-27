@@ -1,200 +1,157 @@
-import { useRef, useState } from "react";
+import React, { useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
-export const INTERESTS = [
-  "Web Development",
-  "AI & ML",
-  "Competitive Programming",
-  "UI/UX Design",
-  "Cyber Security",
-  "Open Source",
-  "Hackathons",
-  "Robotics",
-];
-
-export default function ProfPage() {
-  const fileRef = useRef(null);
-
-  const [timetable, setTimetable] = useState(null);
-  const [showInterestModal, setShowInterestModal] = useState(false);
-  const [selectedInterests, setSelectedInterests] = useState([]);
-
-  /* ---------- handlers ---------- */
-
-  const handleUploadClick = () => {
-    fileRef.current.click();
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setTimetable(file.name);
-  };
-
-  const toggleInterest = (interest) => {
-    setSelectedInterests((prev) =>
-      prev.includes(interest)
-        ? prev.filter((i) => i !== interest)
-        : [...prev, interest]
-    );
-  };
-
-  /* ---------- UI ---------- */
-
+const SectionWrapper = ({ title, children, symbol }) => {
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
+    <div className="space-y-2n z-10 relative px-10 mt-10">
+      <div className="flex gap-x-2 items-center">
+        <span className="material-symbols-outlined bg-blue-500/50 text-blue-500 p-2 rounded-full">
+          {symbol}
+        </span>
+        <h3 className="font-medium">{title}</h3>
+      </div>
+      {children}
+    </div>
+  );
+};
+const RedCTA = ({ text, buttonText, onClick }) => {
+  return (
+    <div className="flex items-center z-10 relative justify-between ml-10">
+      <p className="text-sm text-red-500">{text}</p>
+      <button
+        onClick={onClick}
+        className="btn btn-sm border-none rounded-sm bg-red-500 text-white hover:bg-red-600 px-7"
+      >
+        <span class="material-symbols-outlined">warning</span>
+        {buttonText}
+      </button>
+    </div>
+  );
+};
 
-      {/* Profile Card */}
-      <div className="border rounded-xl p-6 bg-white">
+const ProfPage = () => {
+  const navigate = useNavigate();
+  const userArr = [
+    {
+      id: 1,
+      name: "Alex Johnson",
+      email: "alexjohnson@college.edu",
+      role: "STUDENT",
+      avatar: "https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex",
+      interests: ["abcdef", "Web Development", "AI & ML", "Hackathons"],
+      timetableImage: null,
+    },
+  ];
+  const [user, setUser] = React.useState(userArr[0]);
+  const fileInputRef = useRef(null);
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+  const handleProfileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const imageURL = URL.createObjectURL(file);
+    userArr[0].avatar = imageURL; //backendupdate
+    setUser((prev) => ({ //frontend update
+      ...prev,
+      avatar: imageURL,
+    }));
+  };
 
-        {/* Back */}
-        <button className="text-sm text-gray-500 mb-4">← Back</button>
+  const hasInterests = user.interests.length > 0;
+  const hasTimetable = !!user.timetableImage;
+  return (
+    <div className="h-screen p-y-6 bg-[#f8f9fa] pt-10 pb-30 no-scrollbar overflow-auto scroll-smooth">
+      <div className="max-w-4xl mx-auto rounded-xl relative p-4">
+        {/* HEADER */}
+        <button
+          onClick={() => navigate(-1)}
+          className="text-sm outline-non absolute top-10"
+        >
+          ← Back
+        </button>
+        <div className=" max-w-4xl mx-auto absolute h-[90%] mt-20 w-full bg-white rounded-xl inset-x-0"></div>
 
-        {/* Avatar */}
-        <div className="flex flex-col items-center text-center">
-          <div className="relative">
-            <img
-              src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Alex"
-              alt="avatar"
-              className="w-28 h-28 rounded-full"
-            />
-            <button className="absolute bottom-1 right-1 bg-white p-1 rounded-full shadow">
-              📷
-            </button>
-          </div>
-
-          <h2 className="mt-3 font-semibold text-lg">Alex Johnson</h2>
-          <p className="text-sm text-gray-500">alexjohnson@college.edu</p>
-
-          <span className="mt-2 text-xs px-3 py-1 rounded bg-blue-100 text-blue-600">
-            STUDENT
+        <div className="flex flex-col items-center text-center relative">
+          <img
+            src={user.avatar}
+            alt="avatar"
+            className="w-44 h-44 rounded-full bg-blue-100 relative"
+          />
+          <input
+            type="file"
+            className="hidden"
+            id="profileImg"
+            ref={fileInputRef}
+            onChange={handleProfileChange}
+            accept="image/*"
+          />
+          <span
+            className="material-symbols-outlined p-2 bg-blue-100 text-blue-500 rounded-full absolute bottom-25 right-93"
+            onClick={handleImageClick}
+          >
+            photo_camera
           </span>
+
+          <h2 className="text-lg font-semibold mt-3">{user.name}</h2>
+          <p className="text-sm text-gray-500">{user.email}</p>
+          <div className="flex items-center justify-center p-2 gap-2 mt-2 text-xs bg-blue-100 text-blue-600 rounded">
+            <span className="material-symbols-outlined">School</span>
+            <span className="">{user.role}</span>
+          </div>
         </div>
 
-        {/* Actions */}
-        <div className="mt-8 space-y-6">
-
-          {/* Timetable */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-start gap-3">
-              🗓️
-              <div>
-                <p className="font-medium">Timetable Status</p>
-                <p className="text-sm text-red-500">
-                  {timetable
-                    ? `Uploaded: ${timetable}`
-                    : "Please upload your timetable to get personalized notifications."}
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={handleUploadClick}
-              className="bg-red-500 text-white px-4 py-1.5 rounded text-sm"
-            >
-              Upload Here
-            </button>
-
-            <input
-              ref={fileRef}
-              type="file"
-              className="hidden"
-              accept=".pdf,.png,.jpg"
-              onChange={handleFileChange}
-            />
-          </div>
-
-          {/* Interests */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-start gap-3">
-              🎯
-              <div>
-                <p className="font-medium">Interests</p>
-                <p className="text-sm text-red-500">
-                  {selectedInterests.length === 0
-                    ? "Please select your interests to get personalized notifications."
-                    : "Selected interests shown below."}
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowInterestModal(true)}
-              className="bg-red-500 text-white px-4 py-1.5 rounded text-sm"
-            >
-              Select Here
-            </button>
-          </div>
-
-          {/* Selected Interests */}
-          {selectedInterests.length > 0 && (
-            <div className="flex flex-wrap gap-2 pl-8">
-              {selectedInterests.map((interest) => (
+        <SectionWrapper title="Interests" symbol="interests">
+          {hasInterests ? (
+            <div className="flex flex-wrap gap-2 mt-2">
+              {user.interests.map((interest, i) => (
                 <span
-                  key={interest}
-                  className="px-3 py-1 bg-gray-100 rounded-full text-sm"
+                  key={i}
+                  className="px-3 py-1 border border-blue-400 text-blue-600 rounded-full text-sm"
                 >
                   {interest}
                 </span>
               ))}
             </div>
+          ) : (
+            <RedCTA
+              text="Please select your interests to get personalized notifications."
+              buttonText="Select here"
+              onClick={() => navigate("/student/settings")}
+            />
           )}
-        </div>
+        </SectionWrapper>
 
-        {/* Settings */}
-        <div className="mt-8 flex justify-end">
-          <button className="bg-gray-200 px-4 py-1.5 rounded text-sm">
-            ⚙ Go to Settings
+        <SectionWrapper title="Academic Schedule" symbol="calendar_month">
+          {hasTimetable ? (
+            <div className="border-2 shadow-sm mt-2 border-dashed rounded-xl p-4 flex justify-center items-center">
+              <img
+                src={user.timetableImage}
+                alt="Timetable"
+                className="max-h-48"
+              />
+            </div>
+          ) : (
+            <RedCTA
+              text="Upload your timetable to get personalized recommendations."
+              buttonText="Upload here"
+              onClick={() => navigate("/student/settings")}
+            />
+          )}
+        </SectionWrapper>
+
+        <div className="flex justify-end relative z-10 mr-10 mt-20">
+          <button
+            onClick={() => navigate("/student/settings")}
+            className="btn btn-sm rounded-sm bg-[#e3e3e3] border text-gray-700 px-8"
+          >
+            <span className="material-symbols-outlined">settings</span> Go to
+            Settings
           </button>
         </div>
       </div>
-
-      {/* Active Sessions */}
-      <div className="border rounded-xl p-4 bg-white">
-        <h3 className="font-medium mb-2">Active Sessions</h3>
-        <p className="text-sm text-gray-400 text-center">
-          No active sessions
-        </p>
-      </div>
-
-      {/* Interests Modal */}
-      {showInterestModal && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md">
-            <h3 className="font-semibold mb-4">Select Interests</h3>
-
-            <div className="grid grid-cols-2 gap-3">
-              {INTERESTS.map((interest) => (
-                <button
-                  key={interest}
-                  onClick={() => toggleInterest(interest)}
-                  className={`border rounded-lg px-3 py-2 text-sm ${
-                    selectedInterests.includes(interest)
-                      ? "bg-blue-100 border-blue-500"
-                      : ""
-                  }`}
-                >
-                  {interest}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                onClick={() => setShowInterestModal(false)}
-                className="text-sm text-gray-500"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => setShowInterestModal(false)}
-                className="bg-blue-500 text-white px-4 py-1.5 rounded text-sm"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   );
-}
+};
+
+export default ProfPage;

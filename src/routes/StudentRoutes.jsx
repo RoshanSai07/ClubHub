@@ -7,6 +7,8 @@ import EventPage from "../pages/student/EventsPage";
 import ProfilePage from "../pages/student/ProfilePage";
 import EventDetailsPage from "@/pages/student/EventDetailsPage";
 import NotFoundPage from "@/pages/public/NotFoundPage";
+import ProfPage from "@/pages/student/ProfPage";
+import SettingsPage from "@/pages/student/SettingsPage";
 
 export default function StudentRoutes() {
   return (
@@ -21,6 +23,9 @@ export default function StudentRoutes() {
       </Route>
        <Route path="events/:id" element={<EventDetailsPage/>}/>
        <Route path="profile" element={<ProfilePage />} />
+       <Route path="profileP" element={<ProfPage />} />
+       <Route path="settings" element={<SettingsPage />} />
+       
        <Route path="*" element={<NotFoundPage/>}/>
     </Routes>
   );

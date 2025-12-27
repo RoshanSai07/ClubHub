@@ -30,7 +30,9 @@ const ProfilePage = () => {
           alt="avatar"
           className="w-28 h-28 rounded-full"
         />
+        
         <h2 className="mt-3 font-semibold text-lg">{user.name}</h2>
+        <h2>hello</h2>
         <p className="text-sm text-gray-500">{user.email}</p>
         <span className="mt-2 text-xs px-3 py-1 rounded bg-blue-100 text-blue-600">
           {user.role}
