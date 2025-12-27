@@ -318,7 +318,7 @@ useEffect(() => {
                         Time
                       </p>
                       <p className="text-gray-900 text-xs font-semibold">
-                        {event.time}
+                        {event.time.start}
                       </p>
                     </div>
                   </div>
@@ -339,7 +339,7 @@ useEffect(() => {
                         Location
                       </p>
                       <p className="text-gray-900 text-xs font-semibold ">
-                        {event.location}
+                        {event.location.venue}
                       </p>
                     </div>
                   </div>
