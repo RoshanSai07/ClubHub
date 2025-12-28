@@ -85,10 +85,10 @@ const Navbar = () => {
                 className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
               >
                 <li  className="text-center">
-                  <Link to="/profile">Profile</Link>
+                  <Link to="/student/profile">Profile</Link>
                 </li>
                 <li className="text-center">
-                 <Link to="/settings">Settings</Link>
+                 <Link to="/student/settings">Settings</Link>
                 </li>
                 <li className="text-center">
                     <span
