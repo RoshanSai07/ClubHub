@@ -5,7 +5,7 @@ import { BarChart3, Users, Send } from "lucide-react";
 import ClubEventCard from "@/components/shared/clubEventCard";
 import EventCard from "@/components/shared/eventCard";
 import FooterPage from "@/components/layout/landing/FooterPage";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   getClubUpcomingEvents,
@@ -98,6 +98,8 @@ const ClubDashboard = () => {
   const [pastEvents, setPastEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [club,setClub] = useState(null);
+  const navigate = useNavigate();
+
   // TEMP (replace later with real club auth)
     useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -131,7 +133,7 @@ const ClubDashboard = () => {
   
   return (
 
-    <div>
+    <div className="overflow-y-scroll no-scrollbar h-screen">
       <Navbar />
       <div className="mt-19 bg-[#f8f9fa] p-16">
         <div className="">
@@ -220,7 +222,7 @@ const ClubDashboard = () => {
       </div>
     {/* Past Events */}
     <div className="bg-white p-16 flex flex-col gap-8">
-      <span className="font-semibold">MY PAST EVENTS</span>
+      <span className="font-semibold text-xl">MY PAST EVENTS</span>
       <div className="flex gap-10 flex-wrap">
         {pastEvents.length === 0 ? (
           <p>No past events</p>
@@ -233,10 +235,10 @@ const ClubDashboard = () => {
     </div>
       <div className="flex p-16 bg-[#f8f9fa] justify-between">
         <div>
-          <p className="text-[32px]">Is your club hiring members?</p>
-          <p className="text-[24px] font-light">Yes? Then post your status in the clubs page to find new talented members</p>
+          <p className="text-2xl">Is your club hiring members?</p>
+          <p className="text-xl font-light">Yes? Then post your status in the clubs page to find new talented members</p>
         </div>
-        <div className="bg-yellow-500 text-white rounded-2xl flex items-center px-4 text-[24px]">
+        <div className="bg-yellow-500 text-white rounded-2xl flex items-center px-4 cursor-pointer"  onClick={() =>navigate("/club/settings")}>
           <p>Update your club status</p>
         </div>
     

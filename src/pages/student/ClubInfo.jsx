@@ -134,10 +134,10 @@ const ClubInfo = () => {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center">
             <div className="w-[50%]">
-              <h1 className="text-[32px] font-extrabold mb-1">
+              <h1 className="text-[32px] font-semibold mb-1">
                 Club Hiring and Contact
               </h1>
-              <p className=" text-[24px] font-light">
+              <p className=" font-light">
                 Explore active student organizations, view current recruitment
                 status and connect with club leaders
               </p>
@@ -324,8 +324,8 @@ const ClubInfo = () => {
           {
             announcements.length>0 &&
             announcements.map((a)=>(
-              <div key={a.id} className="p-4 rounded-lg mb-4 text-[24px] bg-white">
-                <h3 className="">From <span className="text-green-500">{a.name}</span></h3>
+              <div key={a.id} className="p-4 rounded-lg mb-4  bg-white">
+                <h3 className="text-[20x]">From <span className="text-green-500">{a.name}</span></h3>
                 <p className="font-light">{a.description}</p>
               </div>
             ))

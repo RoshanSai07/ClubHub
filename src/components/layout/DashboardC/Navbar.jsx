@@ -3,6 +3,7 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { FaRegUser } from "react-icons/fa"
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "@/firebase/auth";
+import NavItem from "@/components/shared/NavItem";
 
 const Navbar = () => {
   //Logout
@@ -60,13 +61,13 @@ const Navbar = () => {
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1 gap-3">
           <li>
-            <Link to="/club">Dashboard</Link>
+            <NavItem to="/club" label="Dashboard" activeColor="green" />
           </li>
           <li>
-            <Link to="/club/draftEvents">Draft Events</Link>
+            <NavItem to="/club/draftEvents" label="Draft Events" activeColor="green" />
           </li>
           <li className="active:bg-transparent hover:bg-transparent">
-            <Link to="/club/members">Members</Link>
+            <NavItem to="/club/members" label="Members" activeColor="green" />
           </li>
           <li className="bg-red-500/25 rounded-full w-fit flex items-center justify-center active:bg-transparent">
             <span className="material-symbols-outlined text-red-500">
@@ -84,10 +85,10 @@ const Navbar = () => {
                 tabIndex="-1"
                 className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
               >
-                <li  className="text-center">
+                <li  className="text-center text-[20px]">
                   <Link to="/profilePage">Profile</Link>
                 </li>
-                <li className="text-center">
+                <li className="text-center text-[20px]">
                  <span
                     onClick={handleLogout}
                     className="cursor-pointer text-red-500 hover:text-red-700"
@@ -95,8 +96,8 @@ const Navbar = () => {
                     Logout
                   </span>
                 </li>
-                <li className="text-center">
-                   <Link to="/settings">Settings</Link>
+                <li className="text-center text-[20px]">
+                   <Link to="/club/settings">Settings</Link>
                 </li>
               </ul>
             </div>

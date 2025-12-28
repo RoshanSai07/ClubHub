@@ -411,6 +411,12 @@ const EventDetailsPage = () => {
                     >
                       Edit Event
                     </button>
+                    <button
+                      onClick={() => navigate(`/club/edit-event/${event.id}`)}
+                      className="py-2 border border-green-500 text-green-500 rounded-xl hover:bg-green-50 transition active:scale-95"
+                    >
+                      Close Registrations
+                    </button>
                   </div>
                 </div>
               </div>

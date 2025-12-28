@@ -24,6 +24,11 @@ const UpcomingEventsSection = () => {
   // ];
   const navigate = useNavigate(); // 2. Initialize Navigation
 
+const normalizeDate = (date) => {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
 
   // 2. STATE MANAGEMENT
   const [searchTerm, setSearchTerm] = useState('');
@@ -73,32 +78,29 @@ const UpcomingEventsSection = () => {
 let matchesDate = true;
 
 if (dateFilter) {
-  const filterDateObj = new Date(dateFilter);
-  filterDateObj.setHours(0, 0, 0, 0);
+  const filterDateObj = normalizeDate(dateFilter);
+  let eventDateObj = null;
 
-  let eventDateObj;
-
-  // CASE 1: Firestore Timestamp
+  // Firestore Timestamp
   if (event.date?.seconds) {
     eventDateObj = new Date(event.date.seconds * 1000);
   }
-  // CASE 2: ISO string (YYYY-MM-DD)
+  // ISO format (YYYY-MM-DD)
   else if (typeof event.date === "string" && event.date.includes("-")) {
     eventDateObj = new Date(event.date);
   }
-  // CASE 3: DD/MM/YYYY
+  // DD/MM/YYYY
   else if (typeof event.date === "string" && event.date.includes("/")) {
     const [day, month, year] = event.date.split("/");
     eventDateObj = new Date(year, month - 1, day);
-  } else {
-    matchesDate = true; // fallback
   }
 
   if (eventDateObj) {
-    eventDateObj.setHours(0, 0, 0, 0);
-    matchesDate = eventDateObj >= filterDateObj;
+    matchesDate =
+      normalizeDate(eventDateObj).getTime() === filterDateObj.getTime();
   }
 }
+
 
     
     return matchesSearch && matchesType && matchesClub && matchesDate;
@@ -133,7 +135,7 @@ if (dateFilter) {
       {/* HEADER SECTION */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Welcome back</h1>
+          <h1 className="text-[32px] font-bold text-gray-900">Welcome back</h1>
           <p className="text-gray-500 mt-1">Ready to explore what's happening on campus today?</p>
         </div>
 
@@ -184,7 +186,7 @@ if (dateFilter) {
                 onChange={(e) => setTypeFilter(e.target.value)}
                 className="appearance-none w-full sm:w-40 pl-4 pr-10 py-2 bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                <option value="">Any Type</option>
+                <option value="">Type</option>
                 {eventTypes.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
@@ -201,7 +203,7 @@ if (dateFilter) {
                 onChange={(e) => setClubFilter(e.target.value)}
                 className="appearance-none w-full sm:w-48 pl-4 pr-10 py-2 bg-gray-50 border-0 rounded-lg text-sm text-gray-600 focus:ring-0 cursor-pointer hover:bg-gray-100 transition-colors"
               >
-                <option value="">Any Club</option>
+                <option value="">Club</option>
                 {clubNames.map(club => (
                   <option key={club} value={club}>{club}</option>
                 ))}

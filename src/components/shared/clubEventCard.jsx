@@ -10,8 +10,7 @@ const getThemeClasses = (theme) => {
     blue: {
       badge: "bg-blue-100 text-blue-800",
       edit: "bg-red-100 text-red-600",
-    },  
-
+    },
   };
   return variants[theme] || variants.yellow;
 };
@@ -24,17 +23,18 @@ const ClubEventCard = ({
   theme = "yellow",
   image,
   id,
-  registeredMembers
+  registeredMembers,
 }) => {
   const colors = getThemeClasses(theme);
-   
+
   return (
-    <div className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center  h-85 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group  cursor-pointer">
-
-      {/* Image Section */}
-      <div className="relative h-[50%] bg-gray-50 flex items-center justify-center border-b">
-
-        {/* Type Badge */}
+    <div
+      className="
+        min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:scale-[1.01] hover:shadow-xl hover:-translate-y-1  duration-300 group 
+      "
+    >
+      {/* Image Section (fixed height) */}
+      <div className="relative h-[45%] bg-gray-50 flex items-center justify-center border-b">
         <span
           className={`absolute top-3 left-3 px-2 py-0.5 text-xs rounded ${colors.badge}`}
         >
@@ -42,11 +42,7 @@ const ClubEventCard = ({
         </span>
 
         {image ? (
-          <img
-            src={image}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
+          <img src={image} alt={title} className="w-full h-full object-cover" />
         ) : (
           <svg
             className="w-10 h-10 text-gray-300"
@@ -64,29 +60,27 @@ const ClubEventCard = ({
         )}
       </div>
 
-      {/* Content */}
-      <div className="p-4 space-y-1">
-        <h3 className="text-base font-semibold text-gray-900">
+      {/* Content (flex-1 so footer stays aligned) */}
+      <div className="p-4 space-y-1 flex-1">
+        <h3 className="text-base font-semibold text-gray-900 line-clamp-2">
           {title}
         </h3>
 
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 truncate">
           On {date}
         </p>
 
         <p className="text-sm text-gray-500">
-          Registered Users:{registeredMembers}
+          Registered Users: {registeredMembers}
         </p>
       </div>
 
-      {/* Footer */}
-      <div className="px-4 border-t flex mt-2 pt-2 justify-between">
+      {/* Footer (always at bottom) */}
+      <div className="px-4 py-3 border-t flex justify-between items-center">
         <Link to={`/club/edit-event/${id}`}>
-        <button
-          className={`px-10 py-1.5 rounded text-sm ${colors.edit}`}
-        >
-          Edit
-        </button>
+          <button className={`px-6 py-1.5 rounded text-sm ${colors.edit}`}>
+            Edit
+          </button>
         </Link>
 
         <button className="p-2 rounded-full hover:bg-blue-50 transition">

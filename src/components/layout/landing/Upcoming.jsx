@@ -1,6 +1,7 @@
 import CardFeature from '@/components/shared/cardFeature'
 import React, {useEffect, useState} from 'react'
 import { getUpcomingEvents } from '@/firebase/collections'
+import EventCard from '@/components/shared/eventCard';
 // const Upcoming = () => {
 //   return (
 //     <div className="p-6 pb-20 flex flex-col gap-7 bg-base-200 mt-10 border-y py-20">
@@ -47,14 +48,21 @@ const Upcoming = () =>{
       <div className="flex flex-wrap gap-4">
         {
           events.map((event)=>(
-            <CardFeature
-              key = {event.clubId}
-              img = {event.image}
-              alt = {event.title}
-              title={event.title}
-              desc={event.description}
-              eventDate={event.date}
-            />
+            // <CardFeature
+            //   key = {event.clubId}
+            //   img = {event.image}
+            //   alt = {event.title}
+            //   title={event.title}
+            //   desc={event.description}
+            //   eventDate={event.date}
+            // />
+             <EventCard 
+            key={event.id}
+            variant="details" 
+            {...event}
+            path={`/student/events/${event.id}`}
+
+          />
 
           ))
         }

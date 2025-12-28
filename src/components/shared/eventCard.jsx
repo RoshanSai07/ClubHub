@@ -31,7 +31,7 @@ const EventCard = ({title, description, date, type, theme, variant = 'feedback' 
           <img 
             src={image} 
             alt={title} 
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+            className="w-full h-full object-cover " 
           />
         ) : (
           // Fallback SVG if no image is provided

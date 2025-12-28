@@ -11,10 +11,10 @@ const NavItem = ({ to, label, activeColor = "blue" }) => {
     <NavLink to={to} end>
       {({ isActive }) => (
         <span
-          className={` inline-flex items-center transition-all duration-300 border-b-2 ${
+          className={` inline-flex text-xl items-center transition-all duration-300 border-b-2 ${
             isActive
               ? activeClasses[activeColor]
-              : "border-transparent text-gray-600"
+              : "border-transparent"
           }`}
         >
           {label}

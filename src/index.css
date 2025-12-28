@@ -194,6 +194,6 @@
 }
 
 @layer base {
-  * { @apply border-border; font-family: var(--font-inter); font-size: 20px; }
+  * { @apply border-border; font-family: var(--font-inter);  }
   body { @apply bg-background text-foreground antialiased; }
 }

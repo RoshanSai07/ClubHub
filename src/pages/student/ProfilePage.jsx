@@ -18,7 +18,7 @@ const ProfilePage = () => {
       {/* Back */}
       <button
         onClick={() => navigate(-1)}
-        className="text-sm text-gray-500 hover:text-gray-900"
+        className="text-sm hover:text-gray-900"
       >
         ← Back
       </button>
@@ -88,7 +88,7 @@ const ProfilePage = () => {
       {/* Go to Settings */}
       <div className="flex justify-end">
         <button
-          onClick={() => navigate("/settings")}
+          onClick={() => navigate("/student/settings")}
           className="flex items-center gap-2 bg-gray-200 px-4 py-2 rounded text-sm"
         >
           <Settings size={16} />
