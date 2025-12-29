@@ -14,7 +14,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
-import { getUserById, getClubById } from "@/firebase/collections";
+import { getUserById , getClubById} from "@/firebase/collections";
 import { auth } from "@/firebase/firebase";
 
 const buildDateTime = (date, time) =>
@@ -52,30 +52,18 @@ export default function CreateEventPage() {
     "Sports",
   ];
 
-  // Update your useForm configuration
   const {
     register,
     handleSubmit,
     control,
     watch,
     setValue,
-    formState: { errors, isValid },
+    formState: { isValid },
   } = useForm({
-    mode: "onChange", // This should trigger validation on change
+    mode: "onChange",
     defaultValues: {
-      title: "",
-      attendees: "",
       categories: [],
-      description: "",
-      venue: "",
-      college: "",
-      area: "",
-      startDate: "",
-      startTime: "",
-      endDate: "",
-      endTime: "",
       highlights: [""],
-      feedbackFormLink: "",
     },
   });
 
@@ -84,20 +72,7 @@ export default function CreateEventPage() {
     name: "highlights",
   });
 
-  // Create watched variable BEFORE using it in useEffect
-  const watched = watch();
   const selectedCategories = watch("categories") || [];
-
-  // Debug useEffect - MOVED AFTER watched is declared
-  useEffect(() => {
-    console.log("Form validity:", isValid);
-    console.log("Current form values:", watched);
-  }, [isValid, watched]);
-
-  // Also check errors
-  useEffect(() => {
-    console.log("Form errors:", errors);
-  }, [errors]);
 
   /* ---------------- RESTORE LOCAL DRAFT ---------------- */
   useEffect(() => {
@@ -111,41 +86,17 @@ export default function CreateEventPage() {
   }, [setValue]);
 
   /* ---------------- AUTOSAVE LOCAL DRAFT ---------------- */
+  const watched = watch();
   useEffect(() => {
     localStorage.setItem("eventDraft", JSON.stringify(watched));
   }, [watched]);
 
   const onSubmit = async (formData) => {
-    console.log("🎯 SUBMIT CLICKED");
-    console.log("Form data:", formData);
-    console.log("Is valid?", isValid);
-
-    // Add validation check
-    const requiredFields = [
-      'title',
-      'attendees',
-      'description',
-      'venue',
-      'college',
-      'area',
-      'startDate',
-      'startTime',
-      'endDate',
-      'endTime',
-    ];
-
-    const missingFields = requiredFields.filter((field) => !formData[field]);
-    if (missingFields.length > 0) {
-      console.log("Missing fields:", missingFields);
-      alert(`Missing required fields: ${missingFields.join(', ')}`);
-      return;
-    }
-
+    console.log("SUBMIT STARTED", formData);
     if (!formData.categories || formData.categories.length === 0) {
       alert("Please select at least one category");
       return;
     }
-
     try {
       const startDateTime = buildDateTime(formData.startDate, formData.startTime);
       let endDateTime = buildDateTime(formData.endDate, formData.endTime);
@@ -173,7 +124,7 @@ export default function CreateEventPage() {
         alert("Club profile not found. Contact admin.");
         return;
       }
-
+      
       const eventTypeThemeMap = {
         Workshop: "yellow",
         Seminar: "blue",
@@ -186,9 +137,9 @@ export default function CreateEventPage() {
       };
 
       const payload = {
-        clubId: user.uid, // ✅ auth uid
-        clubName: club.clubName, // ✅ from clubs collection
-        head: club.presidentName, // ✅ correct field
+        clubId: user.uid,                 // ✅ auth uid
+        clubName: club.clubName,          // ✅ from clubs collection
+        head: club.presidentName,         // ✅ correct field
 
         title: formData.title,
         description: formData.description,
@@ -202,7 +153,7 @@ export default function CreateEventPage() {
           area: formData.area,
         },
 
-        attendees: Number(formData.attendees), // Ensure it's a number
+        attendees: formData.attendees,
         date: formatDate(formData.startDate),
 
         startDateTime,
@@ -261,7 +212,7 @@ export default function CreateEventPage() {
           <button
             type="submit"
             form="create-event-form"
-            disabled={!isValid}
+            //disabled={!isValid}
             className={`flex gap-2 px-4 py-2 rounded ${
               isValid
                 ? "bg-green-500 text-white"
@@ -270,22 +221,9 @@ export default function CreateEventPage() {
           >
             <Upload /> Publish
           </button>
-          {/* Debug button */}
-          <button
-            type="button"
-            onClick={() => {
-              console.log("Current form values:", watched);
-              console.log("Form errors:", errors);
-              console.log("Is valid?", isValid);
-              console.log("Selected categories:", selectedCategories);
-            }}
-            className="px-3 py-1 bg-blue-500 text-white rounded text-sm"
-          >
-            Debug
-          </button>
         </div>
       </div>
-
+      
       <form
         id="create-event-form"
         onSubmit={handleSubmit(onSubmit)}
@@ -302,47 +240,26 @@ export default function CreateEventPage() {
               <h3 className="font-semibold text-[24px]">Event Details</h3>
             </div>
 
-            <label className="font-light text-[16px]">
-              EVENT TITLE <span className="text-red-500">*</span>
-            </label>
+            <label className="font-light text-[16px]">EVENT TITLE</label>
             <input
-              {...register("title", {
-                required: "Event title is required",
-                minLength: { value: 5, message: "Minimum 5 characters" },
-              })}
+              {...register("title", { required: true })}
               placeholder="Eg, Annual Tech Fest 2025"
-              className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] placeholder:font-light ${
-                errors.title ? "border-red-500" : ""
-              }`}
+              className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] placeholder:font-light"
             />
-            {errors.title && (
-              <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
-            )}
-
-            <label className="font-light text-[16px]">
-              MAX ATTENDEES <span className="text-red-500">*</span>
-            </label>
+           
+            <label className="font-light text-[16px]">MAX ATTENDEES</label>
             <input
               type="number"
               min={1}
               {...register("attendees", {
-                required: "Required",
+                required: true,
                 valueAsNumber: true,
-                min: { value: 1, message: "Minimum 1 attendee" },
-                max: { value: 10000, message: "Maximum 10000 attendees" },
               })}
               placeholder="Eg, 200"
-              className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] placeholder:font-light ${
-                errors.attendees ? "border-red-500" : ""
-              }`}
+              className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] placeholder:font-light"
             />
-            {errors.attendees && (
-              <p className="text-red-500 text-sm mt-1">{errors.attendees.message}</p>
-            )}
 
-            <label className="font-light text-[16px]">
-              CATEGORIES <span className="text-red-500">*</span>
-            </label>
+            <label className="font-light text-[16px]">CATEGORIES</label>
             <div className="relative">
               {/* Dropdown Trigger */}
               <div
@@ -359,6 +276,7 @@ export default function CreateEventPage() {
                 </span>
                 <span>▾</span>
               </div>
+              
 
               {/* Dropdown Menu */}
               {open && (
@@ -371,15 +289,8 @@ export default function CreateEventPage() {
                       <input
                         type="checkbox"
                         value={cat}
-                        checked={selectedCategories.includes(cat)}
-                        onChange={(e) => {
-                          const newCategories = e.target.checked
-                            ? [...selectedCategories, cat]
-                            : selectedCategories.filter((c) => c !== cat);
-                          setValue("categories", newCategories, {
-                            shouldValidate: true,
-                          });
-                        }}
+                        {...register("categories")}
+                        
                         className="accent-green-500"
                       />
                       {cat}
@@ -388,9 +299,7 @@ export default function CreateEventPage() {
                 </div>
               )}
             </div>
-            {errors.categories && (
-              <p className="text-red-500 text-sm mt-1">{errors.categories.message}</p>
-            )}
+            
             {selectedCategories.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {selectedCategories.map((cat) => (
@@ -404,22 +313,12 @@ export default function CreateEventPage() {
               </div>
             )}
 
-            <label className="font-light text-[16px]">
-              DESCRIPTION <span className="text-red-500">*</span>
-            </label>
+            <label className="font-light text-[16px]">DESCRIPTION</label>
             <textarea
-              {...register("description", {
-                required: "Description is required",
-                minLength: { value: 50, message: "Minimum 50 characters" },
-              })}
+              {...register("description", { required: true })}
               placeholder="Describe the event agenda, prerequisites and goals..."
-              className={`w-full border px-3 py-2 rounded min-h-[100px] bg-[#f8f9fa] text-[16px] placeholder:font-light ${
-                errors.description ? "border-red-500" : ""
-              }`}
+              className="w-full border px-3 py-2 rounded min-h-[100px] bg-[#f8f9fa] text-[16px] placeholder:font-light"
             />
-            {errors.description && (
-              <p className="text-red-500 text-sm mt-1">{errors.description.message}</p>
-            )}
 
             {/* Highlights */}
             <div>
@@ -452,7 +351,7 @@ export default function CreateEventPage() {
             </div>
           </div>
 
-          {/* Right */}
+          {/* Right - Keep all other sections exactly as they were */}
           <div className="space-y-4">
             {/* Location */}
             <div className="bg-white border rounded-lg p-5 space-y-3">
@@ -460,47 +359,24 @@ export default function CreateEventPage() {
                 <Building2 className="text-green-500"></Building2>
                 <h3 className="font-semibold">Location</h3>
               </div>
-              <label className="font-light text-[16px]">
-                VENUE <span className="text-red-500">*</span>
-              </label>
+              <label className="font-light text-[16px]">VENUE</label>
               <input
-                {...register("venue", { required: "Venue is required" })}
+                {...register("venue", { required: true })}
                 placeholder="Eg, Newton Hall"
-                className={`w-full text-[16px] placeholder:font-ligjt border px-3 py-2 rounded bg-[#f8f9fa] ${
-                  errors.venue ? "border-red-500" : ""
-                }`}
+                className="w-full text-[16px] placeholder:font-ligjt border px-3 py-2 rounded bg-[#f8f9fa]"
               />
-              {errors.venue && (
-                <p className="text-red-500 text-sm mt-1">{errors.venue.message}</p>
-              )}
-
-              <label className="font-light text-[16px]">
-                COLLEGE <span className="text-red-500">*</span>
-              </label>
+              <label className="font-light text-[16px]">COLLEGE</label>
               <input
-                {...register("college", { required: "College is required" })}
+                {...register("college", { required: true })}
                 placeholder="Eg, VIT-AP"
-                className={`w-full border px-3 py-2 text-[16px] font-light rounded bg-[#f8f9fa] ${
-                  errors.college ? "border-red-500" : ""
-                }`}
+                className="w-full border px-3 py-2 text-[16px] font-light rounded bg-[#f8f9fa]"
               />
-              {errors.college && (
-                <p className="text-red-500 text-sm mt-1">{errors.college.message}</p>
-              )}
-
-              <label className="font-light text-[16px]">
-                AREA <span className="text-red-500">*</span>
-              </label>
+              <label className="font-light text-[16px]">AREA</label>
               <input
-                {...register("area", { required: "Area is required" })}
+                {...register("area", { required: true })}
                 placeholder="Near Secretery, Amaravathi"
-                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] font-light ${
-                  errors.area ? "border-red-500" : ""
-                }`}
+                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-[16px] font-light"
               />
-              {errors.area && (
-                <p className="text-red-500 text-sm mt-1">{errors.area.message}</p>
-              )}
             </div>
 
             {/* Time */}
@@ -509,90 +385,44 @@ export default function CreateEventPage() {
                 <CalendarClock className="text-green-500"></CalendarClock>
                 <h3 className="font-semibold">Time</h3>
               </div>
-              
-              <label className="font-light text-[16px]">
-                START TIME <span className="text-red-500">*</span>
-              </label>
-              
-              {/* START DATE - FIXED */}
+              <label className="font-light text-[16px]">START TIME</label>
               <input
                 type="date"
-                {...register("startDate", { required: "Start date is required" })}
-                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
-                  errors.startDate ? "border-red-500 text-gray-900" : "text-gray-900"
-                }`}
+                {...register("startDate", { required: true })}
+                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-gray-400 font-light"
                 onChange={(e) => {
-                  // Update the value in form state
-                  setValue("startDate", e.target.value, { shouldValidate: true });
-                  // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
-              {errors.startDate && (
-                <p className="text-red-500 text-sm mt-1">{errors.startDate.message}</p>
-              )}
-
-              {/* START TIME - FIXED */}
               <input
                 type="time"
-                {...register("startTime", { required: "Start time is required" })}
-                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
-                  errors.startTime ? "border-red-500 text-gray-900" : "text-gray-900"
-                }`}
+                {...register("startTime", { required: true })}
+                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] text-gray-400 font-light"
                 onChange={(e) => {
-                  // Update the value in form state
-                  setValue("startTime", e.target.value, { shouldValidate: true });
-                  // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
-              {errors.startTime && (
-                <p className="text-red-500 text-sm mt-1">{errors.startTime.message}</p>
-              )}
-
-              <label className="font-light text-[16px]">
-                END TIME <span className="text-red-500">*</span>
-              </label>
-              
-              {/* END DATE - FIXED */}
+              <label className="font-light text-[16px]">END TIME</label>
               <input
                 type="date"
-                {...register("endDate", { required: "End date is required" })}
-                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
-                  errors.endDate ? "border-red-500 text-gray-900" : "text-gray-900"
-                }`}
+                {...register("endDate", { required: true })}
+                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] font-light text-gray-400"
                 onChange={(e) => {
-                  // Update the value in form state
-                  setValue("endDate", e.target.value, { shouldValidate: true });
-                  // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
-              {errors.endDate && (
-                <p className="text-red-500 text-sm mt-1">{errors.endDate.message}</p>
-              )}
-
-              {/* END TIME - FIXED */}
               <input
                 type="time"
-                {...register("endTime", { required: "End time is required" })}
-                className={`w-full border px-3 py-2 rounded bg-[#f8f9fa] ${
-                  errors.endTime ? "border-red-500 text-gray-900" : "text-gray-900"
-                }`}
+                {...register("endTime", { required: true })}
+                className="w-full border px-3 py-2 rounded bg-[#f8f9fa] placeholder:font-light text-gray-400 font-light"
                 onChange={(e) => {
-                  // Update the value in form state
-                  setValue("endTime", e.target.value, { shouldValidate: true });
-                  // Remove gray styling
                   e.target.classList.remove("text-gray-400", "font-light");
                   e.target.classList.add("text-gray-900", "font-normal");
                 }}
               />
-              {errors.endTime && (
-                <p className="text-red-500 text-sm mt-1">{errors.endTime.message}</p>
-              )}
             </div>
 
             {/* Upload */}

@@ -8,6 +8,7 @@ import SignupPage2 from '@/pages/public/SignupPage2'
 import NotFoundPage from '@/pages/public/NotFoundPage'
 import SignUpStudent from '@/components/layout/Signup/SignUpStudent'
 import SignUpClub from '@/components/layout/Signup/SignUpClub'
+import WaitingApproval from '@/pages/public/WaitingApproval'
 const PublicRoutes = () => {
   return (
     <div>
@@ -20,7 +21,9 @@ const PublicRoutes = () => {
        <Route path="signup-student" element={<SignUpStudent/>} />
        <Route path="signup-club" element={<SignUpClub />} />
       <Route path="*" element={<NotFoundPage/>}/>
+      <Route path="/waiting-approval" element={<WaitingApproval />} />
       </Routes>
+      
     </div>
   )
 }
