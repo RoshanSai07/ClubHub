@@ -246,6 +246,19 @@ export const getStudentUpcomingEvents = async (studentUid)=>{
     }
 }
 
+export const getPublicAnnouncements = async () =>{
+  const q = query(
+    collection(db, "announcements"),
+    where("status", "==", "SENT"),
+    orderBy("createdAt", "desc"),
+  );
+  const snap = await getDocs(q);
+  return snap.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+};
+
 export const getRecommendedEvents = async (interests = []) => {
   if (!interests.length) return [];
 
@@ -263,6 +276,42 @@ export const getRecommendedEvents = async (interests = []) => {
        interests.includes(event.type));
     
 };
+// club announcements - 
+/* ---------------- CREATE ANNOUNCEMENT ---------------- */
+export const createAnnouncement = async (clubId, data) => {
+  return await addDoc(collection(db, "announcements"), {
+    clubId,
+    ...data,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+};
+
+/* ---------------- UPDATE ANNOUNCEMENT ---------------- */
+export const updateAnnouncement = async (id, data) => {
+  return await updateDoc(doc(db, "announcements", id), {
+    ...data,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+/* ---------------- DELETE ANNOUNCEMENT ---------------- */
+export const deleteAnnouncement = async (id) => {
+  return await deleteDoc(doc(db, "announcements", id));
+};
+
+/* ---------------- FETCH ANNOUNCEMENTS ---------------- */
+export const getClubAnnouncements = async (clubId) => {
+  const q = query(
+    collection(db, "announcements"),
+    where("clubId", "==", clubId),
+    orderBy("createdAt", "desc")
+  );
+
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+};
+
 
 /* Upcoming events - not registered + registered (events page) */
 
