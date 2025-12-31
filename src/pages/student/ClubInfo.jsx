@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+//import React, { useState, useMemo } from 'react';
 import { 
   BrowserRouter, 
   Routes, 
@@ -18,6 +18,8 @@ import {
   ExternalLink,
   Mail
 } from 'lucide-react';
+import { useEffect, useState, useMemo } from "react";
+import { getPublicAnnouncements } from "@/firebase/collections";
 
 
 const ClubInfo = () => {
@@ -26,22 +28,28 @@ const ClubInfo = () => {
   // --- STATE FOR FILTERS ---
   const [activeCategory, setActiveCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [announcements, setAnnouncements] = useState([]);
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
 
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        const data = await getPublicAnnouncements();
+        setAnnouncements(data);
+      } catch (err) {
+        console.error("Failed to load announcements", err);
+      } finally {
+        setLoadingAnnouncements(false);
+      }
+    };
+
+    fetchAnnouncements();
+  }, []);
+    
   // --- MOCK DATA ---
   
-  const announcements=[
-    {
-      id:1,
-      name:"The Coding Club",
-      description:"The Event code your way has been postponed due to some technical issues"
-    },
-    {
-      id:2,
-      name:"The Arts Club",
-      description:"The Event Art competition has been started"
-    }
-  ]
-    const clubs = [
+
+  const clubs = [
     {
       id: 1,
       name: "Coding Club",
@@ -319,17 +327,28 @@ const ClubInfo = () => {
         </div>
        
       </main>
-       <div className="border-2 shadow-lg p-5 rounded-2xl max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 m-10">
+        <div className="border-2 shadow-lg p-5 rounded-2xl max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 m-10">
           <h1 className="text-[24px] font-semibold mb-5">Announcements</h1>
-          {
-            announcements.length>0 &&
-            announcements.map((a)=>(
-              <div key={a.id} className="p-4 rounded-lg mb-4  bg-white">
-                <h3 className="text-[20x]">From <span className="text-green-500">{a.name}</span></h3>
-                <p className="font-light">{a.description}</p>
-              </div>
-            ))
-          }
+
+          {loadingAnnouncements && (
+            <p className="text-gray-500">Loading announcements...</p>
+          )}
+
+          {!loadingAnnouncements && announcements.length === 0 && (
+            <p className="text-gray-500">No announcements yet</p>
+          )}
+
+          {announcements.map((a) => (
+            <div
+              key={a.id}
+              className="p-4 rounded-lg mb-4 bg-white border"
+            >
+              <h3 className="text-[18px]">
+                From <span className="text-green-600 font-medium">{a.clubName}</span>
+              </h3>
+              <p className="font-light mt-1">{a.message}</p>
+            </div>
+          ))}
         </div>
     </div>
   );
