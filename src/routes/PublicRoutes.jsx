@@ -11,10 +11,12 @@ import NotFoundPage from '@/pages/public/NotFoundPage'
 import SignUpStudent from '@/components/layout/Signup/SignUpStudent'
 import SignUpClub from '@/components/layout/Signup/SignUpClub'
 import WaitingApproval from '@/pages/public/WaitingApproval'
+import EventRegister from '@/pages/student/RegisterPage';
 const PublicRoutes = () => {
   return (
     <div>
       <Routes>
+         <Route path="register" element={<EventRegister />} />
       <Route path="/signup" element={<SignUpCard1 />} />
       <Route path="login" element={<LoginPage />} />
       <Route index element={<LandingPage/>} />
