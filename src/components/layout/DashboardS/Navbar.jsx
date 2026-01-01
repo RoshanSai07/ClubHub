@@ -1,29 +1,27 @@
-import { NavLink ,Link, useNavigate} from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { FaRegUser } from "react-icons/fa"
-import {Plus} from "lucide-react";
+import { FaRegUser } from "react-icons/fa";
+import { Plus } from "lucide-react";
 import { logoutUser } from "@/firebase/auth";
 import NavItem from "@/components/shared/NavItem";
 import { useEffect, useState } from "react";
 import { auth } from "@/firebase/firebase";
 import { getStudentById } from "@/firebase/collections";
 
-
 const Navbar = () => {
   //Logout
   const navigate = useNavigate();
   const [avatar, setAvatar] = useState(null);
 
-
   const handleLogout = async () => {
     try {
-      await logoutUser();   // Firebase sign out
-      navigate("/");        // Landing page
+      await logoutUser(); // Firebase sign out
+      navigate("/"); // Landing page
     } catch (err) {
       console.error("Logout failed", err);
     }
-  };  
-  
+  };
+
   useEffect(() => {
     const fetchAvatar = async () => {
       const user = auth.currentUser;
@@ -84,53 +82,53 @@ const Navbar = () => {
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1 gap-3">
           <li>
-               <NavItem to="/student" label="Dashboard" activeColor="blue" />
+            <NavItem to="/student" label="Dashboard" activeColor="blue" />
           </li>
           <li>
             <NavItem to="/student/events" label="Events" activeColor="blue" />
           </li>
           <li>
-           <NavItem to="/student/clubs" label="Clubs" activeColor="blue" />
+            <NavItem to="/student/clubs" label="Clubs" activeColor="blue" />
           </li>
           <li className="bg-red-500/25 rounded-full w-fit flex items-center justify-center active:bg-transparent">
             <span className="material-symbols-outlined text-red-500">
               notifications_unread
             </span>
           </li>
-          <li className="bg-blue-500/25 rounded-xl w-20 flex items-center justify-center " >
+          <li className="bg-blue-500/25 rounded-xl w-20 flex items-center justify-center ">
             <div className="dropdown dropdown-bottom dropdown-end focus:outline-none focus:ring-0 hover:bg-transparent">
-              <div tabIndex={0} role="button"   className="flex items-center">
-              <div className="rounded-full bg-white p-1 w-8 h-8 flex items-center justify-center overflow-hidden">
-                {avatar ? (
-                  <img
-                    src={avatar}
-                    alt="profile"
-                    className="w-full h-full object-cover rounded-full"
-                  />
-                ) : (
-                  <FaRegUser className="text-blue-500" />
-                )}
-              </div>
+              <div tabIndex={0} role="button" className="flex items-center">
+                <div className="rounded-full bg-white p-1 w-8 h-8 flex items-center justify-center overflow-hidden">
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt="profile"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                  ) : (
+                    <FaRegUser className="text-blue-500" />
+                  )}
+                </div>
 
-              <RiArrowDropDownLine />
+                <RiArrowDropDownLine />
               </div>
               <ul
                 tabIndex="-1"
                 className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
               >
-                <li  className="text-center text-[20px]">
+                <li className="text-center text-[20px]">
                   <Link to="/student/profile">Profile</Link>
                 </li>
                 <li className="text-center text-[20px]">
-                 <Link to="/student/settings">Settings</Link>
+                  <Link to="/student/settings">Settings</Link>
                 </li>
                 <li className="text-center text-[20px]">
-                    <span
-                      onClick={handleLogout}
-                      className="cursor-pointer text-red-500 hover:text-red-700"
-                    >
-                      Logout
-                    </span>
+                  <span
+                    onClick={handleLogout}
+                    className="cursor-pointer text-red-500 hover:text-red-700"
+                  >
+                    Logout
+                  </span>
                 </li>
               </ul>
             </div>
