@@ -4,11 +4,13 @@ import { FaRegUser } from "react-icons/fa"
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "@/firebase/auth";
 import NavItem from "@/components/shared/NavItem";
-
+import { getClubById } from "@/firebase/collections";
+import { auth } from "@/firebase/firebase";
+import { useState, useEffect } from "react";
 const Navbar = () => {
   //Logout
   const navigate = useNavigate();
-
+  const [avatar, setAvatar] = useState(null);
   const handleLogout = async () => {
     try {
       await logoutUser();   // Firebase sign out
@@ -17,6 +19,23 @@ const Navbar = () => {
       console.error("Logout failed", err);
     }
   };
+
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const club = await getClubById(user.uid);
+
+      if (club?.avatar) {
+        setAvatar(club.avatar);
+      } else if (user.photoURL) {
+        setAvatar(user.photoURL);
+      }
+    };
+
+    fetchAvatar();
+  }, []);
 
   return (
     <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md  z-50 border-b border-gray-200 h-18">
@@ -77,8 +96,18 @@ const Navbar = () => {
           <li className="bg-green-500/25 rounded-xl w-20 flex items-center justify-center " >
             <div className="dropdown dropdown-bottom dropdown-end focus:outline-none focus:ring-0 hover:bg-transparent">
               <div tabIndex={0} role="button"   className="flex items-center">
-              <div className="rounded-full bg-white p-1">
-              <FaRegUser className="text-blue-500"/></div>
+              <div className="rounded-full bg-white p-1 w-8 h-8 flex items-center justify-center overflow-hidden">
+                {avatar ? (
+                  <img
+                    src={avatar}
+                    alt="profile"
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  <FaRegUser className="text-blue-500" />
+                )}
+              </div>
+
               <RiArrowDropDownLine />
               </div>
               <ul
