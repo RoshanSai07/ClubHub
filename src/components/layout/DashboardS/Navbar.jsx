@@ -40,9 +40,9 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md  z-50 border-b border-gray-200 h-18">
+    <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md z-50 border-b border-gray-200 h-16 px-5">
       <div className="flex-1">
-        <div className="logo-cnt flex items-center font-['Inter'] gap-1">
+        <div className="logo-cnt flex items-center font-['Inter'] gap-3">
           <svg
             width="36"
             height="32"
@@ -76,7 +76,7 @@ const Navbar = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-xl font-bold">ClubHub</span>
+          <span className="text-xl font-normal">ClubHub</span>
         </div>
       </div>
       <div className="flex-none">
@@ -85,10 +85,10 @@ const Navbar = () => {
             <NavItem to="/student" label="Dashboard" activeColor="blue" />
           </li>
           <li>
-            <NavItem to="/student/events" label="Events" activeColor="blue" />
+            <NavItem to="/student/events" label="Events" activeColor="yellow" />
           </li>
           <li>
-            <NavItem to="/student/clubs" label="Clubs" activeColor="blue" />
+            <NavItem to="/student/clubs" label="Clubs" activeColor="green" />
           </li>
           <li className="bg-red-500/25 rounded-full w-fit flex items-center justify-center active:bg-transparent">
             <span className="material-symbols-outlined text-red-500">
@@ -98,12 +98,12 @@ const Navbar = () => {
           <li className="bg-blue-500/25 rounded-xl w-20 flex items-center justify-center ">
             <div className="dropdown dropdown-bottom dropdown-end focus:outline-none focus:ring-0 hover:bg-transparent">
               <div tabIndex={0} role="button" className="flex items-center">
-                <div className="rounded-full bg-white p-1 w-8 h-8 flex items-center justify-center overflow-hidden">
+                <div className="rounded-full bg-white w-8 h-8 flex items-center justify-center overflow-hidden mr-2">
                   {avatar ? (
                     <img
                       src={avatar}
                       alt="profile"
-                      className="w-full h-full object-cover rounded-full"
+                      className="w-8 h-8 object-cover rounded-full"
                     />
                   ) : (
                     <FaRegUser className="text-blue-500" />
@@ -114,15 +114,15 @@ const Navbar = () => {
               </div>
               <ul
                 tabIndex="-1"
-                className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+                className="dropdown-content menu bg-base-100 rounded-xs z-1 w-52 shadow-sm"
               >
-                <li className="text-center text-[20px]">
+                <li className="text-center text-blue-500 text-[20px] hover:bg-blue-50 hover:rounded-xs">
                   <Link to="/student/profile">Profile</Link>
                 </li>
-                <li className="text-center text-[20px]">
+                <li className="text-center text-blue-500 text-[20px] hover:bg-blue-50 hover:rounded-xs">
                   <Link to="/student/settings">Settings</Link>
                 </li>
-                <li className="text-center text-[20px]">
+                <li className="text-center text-[20px] bg-red-50 rounded-xs hover:bg-red-100 hover:rounded-xs">
                   <span
                     onClick={handleLogout}
                     className="cursor-pointer text-red-500 hover:text-red-700"

@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import ToggleItem from "./Toggle";
 
 // const users = [
@@ -12,22 +12,22 @@ import ToggleItem from "./Toggle";
 //   },
 // ];
 
-const NotificationsSection = ({student,onUpdate}) => {
+const NotificationsSection = ({ student, onUpdate }) => {
   const [notifications, setNotifications] = useState({
     eventReminders: false,
     hiringAlerts: false,
     feedbackRequests: false,
   });
 
-  useEffect(()=>{
-    if(!student?.notifications) return;
+  useEffect(() => {
+    if (!student?.notifications) return;
 
     setNotifications({
       eventReminders: student.notifications.eventReminders ?? false,
-      hiringAlerts : student.notifications.hiringAlerts ?? false,
+      hiringAlerts: student.notifications.hiringAlerts ?? false,
       feedbackRequests: student.notifications.feedbackRequests ?? false,
     });
-  },[student]);
+  }, [student]);
 
   const handleToggle = (key) => {
     const updated = {
@@ -37,7 +37,6 @@ const NotificationsSection = ({student,onUpdate}) => {
 
     setNotifications(updated);
 
-    
     onUpdate({
       notifications: updated,
     });
@@ -48,12 +47,17 @@ const NotificationsSection = ({student,onUpdate}) => {
     <div className="mt-10 space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <span className="material-symbols-outlined text-blue-500" style={{ fontSize: "32px" }}>edit_notifications</span>
+        <span
+          className="material-symbols-outlined text-blue-500"
+          style={{ fontSize: "32px" }}
+        >
+          edit_notifications
+        </span>
         <h2 className="text-[26px]">Notifications</h2>
       </div>
 
       {/* Body */}
-      <div className="bg-white p-5 rounded-md border space-y-4">
+      <div className="bg-white p-10 rounded-md border space-y-4">
         <ToggleItem
           title="Event reminders"
           description="Receive push Notifications 1 hour before events you've joined starts"

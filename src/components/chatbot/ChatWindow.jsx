@@ -15,6 +15,8 @@ const generateId = () =>
   crypto.randomUUID?.() ?? Math.random().toString(36).slice(2);
 
 export default function ChatWindow({ onClose }) {
+  const bottomRef = useRef(null);
+
   const [messages, setMessages] = useState(() => {
     try {
       const saved = sessionStorage.getItem(STORAGE_KEY);
@@ -24,6 +26,7 @@ export default function ChatWindow({ onClose }) {
       return [];
     }
   });
+
   const [loading, setLoading] = useState(false);
   const chatRef = useRef(null);
 
@@ -32,15 +35,21 @@ export default function ChatWindow({ onClose }) {
   }, [messages]);
 
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (chatRef.current && !chatRef.current.contains(e.target)) {
-        onClose();
-      }
-    }
+    bottomRef.current?.scrollIntoView({
+      behavior: "smooth",
+    });
+  }, [messages, loading]);
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onClose]);
+  // useEffect(() => {
+  //   function handleClickOutside(e) {
+  //     if (chatRef.current && !chatRef.current.contains(e.target)) {
+  //       onClose();
+  //     }
+  //   }
+
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, [onClose]);
 
   const sendMessage = async (text) => {
     const userMessage = {
@@ -53,11 +62,13 @@ export default function ChatWindow({ onClose }) {
     setLoading(true);
 
     try {
+      const student = await getAIStudentContext();
+
       const aiData = await runAIBrain({
         message: text,
         user: getAIUserContext(),
-        student: await getAIStudentContext(),
-        events: await getAIEventContext(),
+        student,
+        events: await getAIEventContext(student?.preferences?.interest || []),
       });
 
       const aiMessage = {
@@ -145,6 +156,8 @@ export default function ChatWindow({ onClose }) {
         )}
 
         {loading && <div className="text-xs text-gray-400">Thinking…</div>}
+
+        <div ref={bottomRef} />
       </div>
 
       <ChatInput onSend={sendMessage} disabled={loading} />

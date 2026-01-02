@@ -32,12 +32,11 @@ const DangerZoneSection = () => {
     <div className="mt-10">
       <h2 className="text-[24px] mb-3 text-red-600"></h2>
 
-      <div className="border border-red-300 bg-white p-5 rounded-md space-y-4">
-        
+      <div className="border border-red-300 bg-white p-10 rounded-md space-y-4">
         <div className="flex justify-between items-center">
           <div>
             <p className="text-red-500">
-             End your current session on this device
+              End your current session on this device
             </p>
           </div>
 
@@ -48,8 +47,6 @@ const DangerZoneSection = () => {
             Sign out
           </button>
         </div>
-
-      
 
         {/* Delete Account */}
         <div className="flex justify-between items-center">

@@ -5,7 +5,7 @@ export default function FollowUpButtons({ items, onClick }) {
         <button
           key={item}
           onClick={() => onClick(item)}
-          className="px-3 py-1.5 text-xs border rounded-full text-blue-600 hover:bg-blue-50 transition"
+          className="px-3 py-1.5 text-xs border rounded-md text-blue-600 hover:bg-blue-50 transition"
         >
           {item}
         </button>

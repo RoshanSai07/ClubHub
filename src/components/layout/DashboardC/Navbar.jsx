@@ -1,27 +1,48 @@
 import { Link } from "react-router-dom";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { FaRegUser } from "react-icons/fa"
+import { FaRegUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "@/firebase/auth";
 import NavItem from "@/components/shared/NavItem";
+import { getClubById } from "@/firebase/collections";
+import { useEffect, useState } from "react";
+import { auth } from "@/firebase/firebase";
 
 const Navbar = () => {
   //Logout
   const navigate = useNavigate();
+  const [avatar, setAvatar] = useState(null);
 
   const handleLogout = async () => {
     try {
-      await logoutUser();   // Firebase sign out
-      navigate("/");        // Landing page
+      await logoutUser(); // Firebase sign out
+      navigate("/"); // Landing page
     } catch (err) {
       console.error("Logout failed", err);
     }
   };
 
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const club = await getClubById(user.uid);
+
+      if (club?.avatar) {
+        setAvatar(student.avatar);
+      } else if (user.photoURL) {
+        setAvatar(user.photoURL);
+      }
+    };
+
+    fetchAvatar();
+  }, []);
+
   return (
-    <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md  z-50 border-b border-gray-200 h-18">
+    <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md z-50 border-b border-gray-200 h-16 px-5">
       <div className="flex-1">
-        <div className="logo-cnt flex items-center font-['Inter'] gap-1">
+        <div className="logo-cnt flex items-center font-['Inter'] gap-3">
           <svg
             width="36"
             height="32"
@@ -55,7 +76,7 @@ const Navbar = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-xl font-bold">ClubHub</span>
+          <span className="text-xl font-normal">ClubHub</span>
         </div>
       </div>
       <div className="flex-none">
@@ -64,40 +85,53 @@ const Navbar = () => {
             <NavItem to="/club" label="Dashboard" activeColor="green" />
           </li>
           <li>
-            <NavItem to="/club/draftEvents" label="Draft Events" activeColor="green" />
+            <NavItem
+              to="/club/draftEvents"
+              label="Draft Events"
+              activeColor="yellow"
+            />
           </li>
           <li className="active:bg-transparent hover:bg-transparent">
-            <NavItem to="/club/members" label="Members" activeColor="green" />
+            <NavItem to="/club/members" label="Members" activeColor="blue" />
           </li>
           <li className="bg-red-500/25 rounded-full w-fit flex items-center justify-center active:bg-transparent">
             <span className="material-symbols-outlined text-red-500">
               notifications_unread
             </span>
           </li>
-          <li className="bg-green-500/25 rounded-xl w-20 flex items-center justify-center " >
+          <li className="bg-green-500/25 rounded-xl w-20 flex items-center justify-center ">
             <div className="dropdown dropdown-bottom dropdown-end focus:outline-none focus:ring-0 hover:bg-transparent">
-              <div tabIndex={0} role="button"   className="flex items-center">
-              <div className="rounded-full bg-white p-1">
-              <FaRegUser className="text-blue-500"/></div>
-              <RiArrowDropDownLine />
+              <div tabIndex={0} role="button" className="flex items-center">
+                <div className="rounded-full bg-white w-8 h-8 flex items-center justify-center overflow-hidden mr-2">
+                  {avatar ? (
+                    <img
+                      src={avatar}
+                      alt="profile"
+                      className="w-8 h-8 object-cover rounded-full"
+                    />
+                  ) : (
+                    <FaRegUser className="text-green-500" />
+                  )}
+                </div>
+                <RiArrowDropDownLine />
               </div>
               <ul
                 tabIndex="-1"
-                className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+                className="dropdown-content menu bg-base-100 rounded-xs z-1 w-52 p-2 shadow-sm"
               >
-                <li  className="text-center text-[20px]">
+                <li className="text-center text-green-500 text-[20px] hover:bg-green-50 hover:rounded-xs">
                   <Link to="/profilePage">Profile</Link>
                 </li>
-                <li className="text-center text-[20px]">
-                 <span
+                <li className="text-center text-green-500 text-[20px] hover:bg-green-50 hover:rounded-xs">
+                  <Link to="/club/settings">Settings</Link>
+                </li>
+                <li className="text-center text-[20px] bg-red-50 rounded-xs hover:bg-red-100 hover:rounded-xs">
+                  <span
                     onClick={handleLogout}
                     className="cursor-pointer text-red-500 hover:text-red-700"
                   >
                     Logout
                   </span>
-                </li>
-                <li className="text-center text-[20px]">
-                   <Link to="/club/settings">Settings</Link>
                 </li>
               </ul>
             </div>
