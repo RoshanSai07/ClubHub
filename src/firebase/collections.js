@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp, orderBy} from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp, orderBy,arrayUnion, increment} from "firebase/firestore";
 import {db} from "./firebase"
 
 //get user by their id
@@ -290,6 +290,11 @@ export const createAnnouncement = async (clubId, data) => {
   return await addDoc(collection(db, "announcements"), {
     clubId,
     ...data,
+    analytics: {
+      views: 0,
+      clicks: 0,
+      registrations: 0,
+    },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -435,5 +440,72 @@ export const updateClubPreferences = async (clubId, preferences) => {
   await updateDoc(ref, {
     preferences,
     updatedAt: new Date(),
+  });
+};
+
+export const getPublicClubs = async () => {
+  try {
+    const q = query(
+      collection(db, "clubs"),
+      where("status", "==", "ACTIVE"),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching public clubs:", error);
+    return [];
+  }
+};
+
+// analytics
+
+export const trackEventView = async (eventId) => {
+  const ref = doc(db, "events", eventId);
+
+  await updateDoc(ref, {
+    "analytics.views": increment(1),
+  });
+};
+
+export const getClubAnalytics = async (clubId) => {
+  const q = query(
+    collection(db, "events"),
+    where("clubId", "==", clubId)
+  );
+
+  const snapshot = await getDocs(q);
+
+  let totalViews = 0;
+  let totalClicks = 0;
+  let totalRegistrations = 0;
+
+  snapshot.forEach((doc) => {
+    const analytics = doc.data().analytics || {
+      views: 0,
+      clicks: 0,
+      registrations: 0,
+    };
+
+    totalViews += analytics.views || 0;
+    totalClicks += analytics.clicks || 0;
+    totalRegistrations += analytics.registrations || 0;
+  });
+
+  return { totalViews, totalClicks, totalRegistrations };
+};
+
+
+export const registerForEvent = async (eventId, studentId) => {
+  const eventRef = doc(db, "events", eventId);
+
+  await updateDoc(eventRef, {
+    registeredUsers: arrayUnion(studentId),
+    "analytics.registrations": increment(1),
   });
 };

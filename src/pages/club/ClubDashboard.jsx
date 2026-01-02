@@ -171,8 +171,10 @@ const ClubDashboard = () => {
             <span className="font-light ">Create New Event</span>
           </div>
           </Link>
-          <div className="three border-2 border-[#d9d9d9] shadow-sm rounded-2xl w-[30%]  justify-center bg-white flex flex-col font-light">
-            <div className="flex items-center gap-3 p-2 border-b">
+          <div className="three border-2 border-[#d9d9d9] shadow-sm rounded-2xl w-[30%]  justify-center bg-white flex flex-col font-light"
+            onClick={() => navigate("/club/analytics")}
+          >
+            <div className="flex items-center gap-3 p-2 border-b" >
               {" "}
               <BarChart3 className="w-8 text-yellow-500" />
               View Analytics
@@ -232,7 +234,12 @@ const ClubDashboard = () => {
           <p>No past events</p>
         ) : (
           pastEvents.map((event) => (
-            <EventCard key={event.id} {...event} showAnalytics />
+            <EventCard
+              key={event.id}
+              {...event}
+              showAnalytics
+              onClick={() => navigate(`/club/analytics/${event.id}`)}
+            />
           ))
         )}
       </div>

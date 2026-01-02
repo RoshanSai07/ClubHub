@@ -6,6 +6,7 @@ import { getUpcomingRegisteredEvents,getStudentPastEvents } from '@/firebase/col
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/firebase/firebase'
 import { getStudentById } from "@/firebase/collections";
+import { trackEventView } from "@/firebase/collections";
 
 
 const StudentDashboard = () => {
@@ -85,13 +86,10 @@ const StudentDashboard = () => {
         </div>
         <div className="flex flex-wrap gap-6 ">
            {upcomingEvents.map((event) => (
-            <EventCard 
-            key={event.id}
-            variant="details" 
-            {...event}
-            path={`/student/events/${event.id}`}
-
-          />
+            <EventCard
+              {...event}
+              path={`/student/events/${event.id}`}
+            />
         ))}
         </div>
       </section>

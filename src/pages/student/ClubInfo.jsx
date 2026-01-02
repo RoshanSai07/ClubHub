@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState, useMemo } from "react";
 import { getPublicAnnouncements } from "@/firebase/collections";
-
+import { getPublicClubs } from '@/firebase/collections';
 
 const ClubInfo = () => {
   const navigate = useNavigate();
@@ -30,6 +30,23 @@ const ClubInfo = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [announcements, setAnnouncements] = useState([]);
   const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+  const [clubs, setClubs] = useState([]);
+  const [loadingClubs, setLoadingClubs] = useState(true);
+
+  useEffect(() => {
+    const fetchClubs = async () => {
+      try {
+        const data = await getPublicClubs();
+        setClubs(data);
+      } catch (err) {
+        console.error("Failed to load clubs", err);
+      } finally {
+        setLoadingClubs(false);
+      }
+    };
+
+    fetchClubs();
+  }, []);
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
@@ -50,7 +67,10 @@ const ClubInfo = () => {
   
   // --- LOGIC: EXTRACT CATEGORIES ---
   // Dynamically create a list of unique categories from the data + 'All'
-  const categories = ["All", ...new Set(clubs.map((club) => club.category))];
+  const categories = useMemo(() => {
+    return ["All", ...new Set(clubs.map((club) => club.category))];
+  }, [clubs]);
+  
 
   // --- LOGIC: FILTERING & SEARCH ---
   const filteredClubs = useMemo(() => {
@@ -62,7 +82,7 @@ const ClubInfo = () => {
 
       // 2. Search Filter Logic
       // Convert both club name and search query to lowercase to ensure case-insensitive matching.
-      const matchesSearch = club.name
+      const matchesSearch = club.clubName
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 

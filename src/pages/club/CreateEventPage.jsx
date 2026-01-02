@@ -225,6 +225,11 @@ export default function CreateEventPage() {
 
         registeredUsers: [],
         status: "upcoming",
+        analytics: {
+          views: 0,
+          clicks: 0,
+          registrations: 0,
+        },
 
         categories: formData.categories,
         type: formData.categories[0],

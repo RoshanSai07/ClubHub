@@ -2,7 +2,6 @@ import React from 'react';
 import {useNavigate} from "react-router-dom";
 
 
-
 const getThemeClasses = (theme) => {
  
   const variants = {
@@ -14,12 +13,16 @@ const getThemeClasses = (theme) => {
   return variants[theme] || variants.blue;
 };
 
-const EventCard = ({title, description, date, type, theme, variant = 'feedback' ,image,showAnalytics = false,path}) => {
+const EventCard = ({title, description, date, type, theme, variant = 'feedback' ,image,showAnalytics = false,path, onClick,}) => {
   const colors = getThemeClasses(theme);
    const navigate=useNavigate();
 
   return (
-    <div className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:scale-[1.01] hover:shadow-xl hover:-translate-y-1  duration-300 group " onClick={()=>navigate(path)}>
+    <div className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:scale-[1.01] hover:shadow-xl hover:-translate-y-1  duration-300 group "   onClick={() => {
+        if (onClick) onClick();   // 👈 optional extra work
+        if (path) navigate(path); // 👈 your existing navigation
+      }}
+    >
       
       {/* Image Area */}
       <div className="h-[50%] bg-gray-50 relative flex items-center justify-center border-b border-gray-100">

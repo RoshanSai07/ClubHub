@@ -11,7 +11,8 @@ import DraftEventsPage from "@/pages/club/DraftEventsPage";
 import Settings from "@/pages/club/Settings";
 import NotFoundPage from "@/pages/public/NotFoundPage";
 import Announcements from "@/pages/club/AnnouncementsPage";
-
+import EventAnalytics from "@/pages/club/eventAnalytics";
+import ClubAnalytics from "@/pages/club/ClubAnalytics";
 const ClubRoutes = () => {
   // const [userDoc, setUserDoc] = useState(null);
   // const [loading, setLoading] = useState(true);
@@ -57,6 +58,11 @@ const ClubRoutes = () => {
       <Route index element={<ClubDashboard />} />
       <Route path="create-event" element={<CreateEventPage />} />
       <Route path="edit-event/:id" element={<EditEventPage />} />
+      {/* CLUB LEVEL ANALYTICS */}
+      <Route path="analytics" element={<ClubAnalytics />} />
+
+      {/* EVENT LEVEL ANALYTICS */}
+      <Route path="analytics/:id" element={<EventAnalytics />} />
       <Route path="draftEvents" element={<DraftEventsPage />} />
       <Route path="settings" element={<Settings />} />
        <Route path="announcements" element={<Announcements />} />

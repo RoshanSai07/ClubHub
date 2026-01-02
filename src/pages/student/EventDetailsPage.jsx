@@ -1,8 +1,8 @@
 import React, { useEffect , useState} from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import mapImg from "@/assets/map.png";
-import { getEventById } from "@/firebase/collections";
-
+import { getEventById ,registerForEvent, trackEventView} from "@/firebase/collections";
+import { auth } from "@/firebase/firebase";
 // Using a URL fallback since local assets might not render in this preview
 
 const EventDetailsPage = () => {
@@ -86,6 +86,18 @@ const [event, setEvent] = useState(null);
 const [loading, setLoading] = useState(true);
 
 useEffect(() => {
+  if (!event?.id) return;
+
+  const key = `viewed_event_${event.id}`;
+
+  if (!sessionStorage.getItem(key)) {
+    trackEventView(event.id);
+    sessionStorage.setItem(key, "true");
+  }
+}, [event?.id]);
+
+
+useEffect(() => {
   const fetchEvent = async () => {
     setLoading(true);
     try {
@@ -106,13 +118,29 @@ useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  const handleRegister = () => {
+
+
+  const handleRegister = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      alert("Please login to register");
+      return;
+    }
+
+    // ✅ COUNT CLICK (interest)
+    await updateDoc(doc(db, "events", event.id), {
+      "analytics.clicks": increment(1),
+    });
+
+    // ✅ Open registration link
     if (event.gFormLink && event.gFormLink !== "#") {
-        navigate(`/events/${event.id}/register`);
+      window.open(event.gFormLink, "_blank");
     } else {
       alert("Registration link not available yet.");
     }
   };
+
+
 
   if (loading) {
     return <div className="p-10 text-center">Loading...</div>;
