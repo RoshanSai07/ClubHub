@@ -172,9 +172,9 @@ const ClubDashboard = () => {
           </div>
           </Link>
           <div className="three border-2 border-[#d9d9d9] shadow-sm rounded-2xl w-[30%]  justify-center bg-white flex flex-col font-light"
-            onClick={() => navigate("/club/analytics")}
+            
           >
-            <div className="flex items-center gap-3 p-2 border-b" >
+            <div className="flex items-center gap-3 p-2 border-b" onClick={() => navigate("/club/analytics")} >
               {" "}
               <BarChart3 className="w-8 text-yellow-500" />
               View Analytics
@@ -183,7 +183,7 @@ const ClubDashboard = () => {
               <Users className="w-8 text-blue-500" />
               Manage Members
             </div>
-            <div className="flex items-center p-2  gap-2 cursor-pointer" onClick={()=>{navigate("/club/announcements")}}>
+            <div className="flex items-center p-2  gap-2 cursor-pointer" onClick={()=>{navigate("/club/announcements");}}>
               <Send className="w-8  text-red-500" />
               Send Announcement
             </div>
@@ -238,7 +238,7 @@ const ClubDashboard = () => {
               key={event.id}
               {...event}
               showAnalytics
-              onClick={() => navigate(`/club/analytics/${event.id}`)}
+              onClick={() => navigate(`/club/events/${event.id}/analytics`)}
             />
           ))
         )}

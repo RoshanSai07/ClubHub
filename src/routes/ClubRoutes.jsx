@@ -62,10 +62,13 @@ const ClubRoutes = () => {
       <Route path="analytics" element={<ClubAnalytics />} />
 
       {/* EVENT LEVEL ANALYTICS */}
-      <Route path="analytics/:id" element={<EventAnalytics />} />
+      <Route
+        path="events/:eventId/analytics"
+        element={<EventAnalytics />}
+      />
       <Route path="draftEvents" element={<DraftEventsPage />} />
       <Route path="settings" element={<Settings />} />
-       <Route path="announcements" element={<Announcements />} />
+      <Route path="announcements" element={<Announcements />} />
   
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
