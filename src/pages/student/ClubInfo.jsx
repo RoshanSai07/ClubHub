@@ -1,314 +1,273 @@
-//import React, { useState, useMemo } from 'react';
-import { 
-  BrowserRouter, 
-  Routes, 
-  Route, 
-  useNavigate 
-} from 'react-router-dom';
-import { 
-  Search, 
-  ArrowRight, 
-  Users, 
-  Code, 
-  Mic, 
-  Palette, 
-  Cpu, 
-  Globe,
-  ChevronDown,
-  ExternalLink,
-  Mail
-} from 'lucide-react';
-import { useEffect, useState, useMemo } from "react";
-import { getPublicAnnouncements } from "@/firebase/collections";
-import { getPublicClubs } from '@/firebase/collections';
+import React, { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebase/firebase";
+import { Mail } from "lucide-react";
+
+const formatTimeAgo = (timestamp) => {
+  if (!timestamp) return "";
+
+  const date = timestamp.toDate();
+  const seconds = Math.floor((new Date() - date) / 1000);
+
+  const intervals = [
+    { label: "year", seconds: 31536000 },
+    { label: "month", seconds: 2592000 },
+    { label: "day", seconds: 86400 },
+    { label: "hour", seconds: 3600 },
+    { label: "minute", seconds: 60 },
+  ];
+
+  for (const i of intervals) {
+    const count = Math.floor(seconds / i.seconds);
+    if (count >= 1) {
+      return `${count} ${i.label}${count > 1 ? "s" : ""} ago`;
+    }
+  }
+
+  return "Just now";
+};
+
 
 const ClubInfo = () => {
-  const navigate = useNavigate();
-
-  // --- STATE FOR FILTERS ---
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [announcements, setAnnouncements] = useState([]);
-  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
   const [clubs, setClubs] = useState([]);
-  const [loadingClubs, setLoadingClubs] = useState(true);
+  const [announcements, setAnnouncements] = useState([]);
+  const [filter, setFilter] = useState("ALL");
+  const [announcementFilter, setAnnouncementFilter] = useState("ALL");
 
+  /* ---------------- FETCH CLUBS ---------------- */
   useEffect(() => {
     const fetchClubs = async () => {
-      try {
-        const data = await getPublicClubs();
-        setClubs(data);
-      } catch (err) {
-        console.error("Failed to load clubs", err);
-      } finally {
-        setLoadingClubs(false);
-      }
+      const snap = await getDocs(collection(db, "clubs"));
+
+      const data = snap.docs.map((doc) => {
+        const club = doc.data();
+
+        return {
+          id: doc.id,
+          clubName: club.clubName,
+          description: club.about || club.description || "",
+          email: club.email,
+          category: club.category?.[0] || "Category",
+          avatar: club.avatar,
+          hiringOpen: club.hiringOpen === true,
+          gFormLink: club.gFormLink,
+        };
+      });
+
+      setClubs(data);
     };
 
     fetchClubs();
   }, []);
 
+  /* ---------------- FETCH ANNOUNCEMENTS ---------------- */
   useEffect(() => {
     const fetchAnnouncements = async () => {
-      try {
-        const data = await getPublicAnnouncements();
-        setAnnouncements(data);
-      } catch (err) {
-        console.error("Failed to load announcements", err);
-      } finally {
-        setLoadingAnnouncements(false);
-      }
+      const snap = await getDocs(collection(db, "announcements"));
+
+      const data = snap.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setAnnouncements(data);
     };
 
     fetchAnnouncements();
   }, []);
-    
-  // --- MOCK DATA ---
-  
-  // --- LOGIC: EXTRACT CATEGORIES ---
-  // Dynamically create a list of unique categories from the data + 'All'
-  const categories = useMemo(() => {
-    return ["All", ...new Set(clubs.map((club) => club.category))];
-  }, [clubs]);
-  
+  const filteredAnnouncements = announcements.filter((a) => {
+    if (!a.createdAt) return false;
 
-  // --- LOGIC: FILTERING & SEARCH ---
-  const filteredClubs = useMemo(() => {
-    return clubs.filter((club) => {
-      // 1. Category Filter Logic
-      // If 'All' is selected, return true. Otherwise, check if club.category matches activeCategory.
-      const matchesCategory =
-        activeCategory === "All" || club.category === activeCategory;
+    const created = a.createdAt.toDate();
+    const now = new Date();
 
-      // 2. Search Filter Logic
-      // Convert both club name and search query to lowercase to ensure case-insensitive matching.
-      const matchesSearch = club.clubName
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
+    if (announcementFilter === "ALL") return true;
 
-      // Return true only if BOTH conditions are met
-      return matchesCategory && matchesSearch;
-    });
-  }, [activeCategory, searchQuery, clubs]);
+    if (announcementFilter === "WEEK") {
+      return now - created <= 7 * 24 * 60 * 60 * 1000;
+    }
+
+    if (announcementFilter === "MONTH") {
+      return now - created <= 30 * 24 * 60 * 60 * 1000;
+    }
+
+    if (announcementFilter === "OLDER") {
+      return now - created > 30 * 24 * 60 * 60 * 1000;
+    }
+
+    return true;
+  });
+
+  /* ---------------- FILTER LOGIC ---------------- */
+  const filteredClubs =
+    filter === "ALL"
+      ? clubs
+      : filter === "OPEN"
+      ? clubs.filter((c) => c.hiringOpen)
+      : clubs.filter((c) => !c.hiringOpen);
 
   return (
-    <div className="bg-[#f8f9fa] font-sans text-gray-900 mt-18 pb-10">
-      {/* HEADER */}
-      <div className="">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex justify-between items-center">
-            <div className="w-[50%]">
-              <h1 className="text-[32px] font-semibold mb-1">
-                Club Hiring and Contact
-              </h1>
-              <p className=" font-light">
-                Explore active student organizations, view current recruitment
-                status and connect with club leaders
-              </p>
-            </div>
-
-            <div className="relative w-[40%] md:w-96">
-              <input
-                type="text"
-                placeholder="Search Clubs..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-4 pr-12 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-100 transition-all text-sm"
-              />
-              <button className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 text-gray-400">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
-          {/* CONTROL BAR: Search & Categories */}
-          <div className="mt-8 flex flex-col md:flex-row gap-4 items-center justify-between">
-            {/* Category Filter Dropdown */}
-          </div>
-        </div>
+    <div className="p-6 space-y-10">
+      {/* ================= HEADER ================= */}
+      <div>
+        <h1 className="text-2xl font-semibold">Club Hiring & Contact</h1>
+        <p className="text-gray-500 text-sm">
+          Explore active student organizations, view recruitment status and connect with club leaders
+        </p>
       </div>
 
-      {/* CLUBS GRID */}
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col gap-4 bg-white rounded-3xl">
-        <div className="relative self-end">
-          <select
-            value={activeCategory}
-            onChange={(e) => setActiveCategory(e.target.value)}
-            className="w-full md:w-48 appearance-none bg-gray-100 border-none rounded-xl py-3 pl-4 pr-10 focus:ring-2 focus:ring-blue-500/20 outline-none font-medium cursor-pointer justify-end"
+      {/* ================= FILTER ================= */}
+      <div className="flex gap-3">
+        {[
+          { key: "ALL", label: "All" },
+          { key: "OPEN", label: "Hiring Open" },
+          { key: "CLOSED", label: "Closed" },
+        ].map((item) => (
+          <button
+            key={item.key}
+            onClick={() => setFilter(item.key)}
+            className={`px-4 py-1 rounded-full text-sm border ${
+              filter === item.key
+                ? "bg-yellow-400 text-black"
+                : "bg-white text-gray-600"
+            }`}
           >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none ">
-            <ChevronDown size={20} />
-          </div>
-        </div>
-        <div>
-          {filteredClubs.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredClubs.map((club) => (
-                <div
-                  key={club.id}
-                  className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full cursor-pointer"
-                >
-                  {/* Card Header */}
-                  <div className="flex justify-between items-start mb-6">
-                    <div
-                      className={`w-14 h-14 rounded-2xl ${club.color} flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform`}
-                    >
-                      <club.icon size={28} />
-                    </div>
-                    <div
-                      className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                        club.hiringStatus === "Hiring" ||
-                        club.hiringStatus === "Open"
-                          ? "bg-green-100 text-green-700 border border-green-200"
-                          : "bg-gray-100 text-gray-600 border border-gray-200"
-                      }`}
-                    >
-                      {club.hiringStatus}
-                    </div>
-                  </div>
+            {item.label}
+          </button>
+        ))}
+      </div>
 
-                  {/* Card Content */}
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <h3 className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                        {club.name}
-                      </h3>
-                    </div>
-                    <div className="mb-4">
-                      <span className="inline-block px-2 py-1 bg-gray-100  text-xs rounded-md">
-                        {club.category}
-                      </span>
-                    </div>
-                    <p className="text-gray-600 leading-relaxed text-sm mb-6">
-                      {club.description}
-                    </p>
-                  </div>
-
-                  {/* Card Footer */}
-                  <div className="p-2 border-t border-gray-100 text-[16px] font-light text-black-500/75">
-                        {/* CASE 1: HIRING */}
-                    {(club.hiringStatus === 'Hiring' || club.hiringStatus === 'Open') && (
-                      <div className="flex items-center justify-between">
-                      <a 
-                        href={club.applyLink}
-                        target="_blank"
-                        rel="noopener noreferrer" 
-                        className=" px-12 py-2 bg-blue-500 text-white rounded-sm
-                        hover:bg-blue-500/50 transition-colors shadow-sm "
-                      >Apply
-                      </a>
-                       <a 
-                          href={`mailto:${club.email}`}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                          title={`Contact ${club.name} Head`}
-                        >
-                          <Mail size={18} />
-                        </a>
-                      </div>
-                    )}
-
-                    {/* CASE 2: OPENING SOON */}
-                    {club.hiringStatus === 'Opening Soon' && (
-                      <div className="flex items-center justify-between">                     <span className=" rounded-lg">
-                        Applications Opening Soon
-                      </span>
-                      <a 
-                          href={`mailto:${club.email}`}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                          title={`Contact ${club.name} Head`}
-                        >
-                          <Mail size={18} />
-                        </a>
-                      </div>
-                    )}
-
-                    {/* CASE 3: CLOSED (Show Email Icon) */}
-                    {club.hiringStatus === 'Closed' && (
-                      <div className="flex items-center justify-between">
-                        <span className="">Applications closed</span>
-                        <a 
-                          href={`mailto:${club.email}`}
-                          className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
-                          title={`Contact ${club.name} Head`}
-                        >
-                          <Mail size={18} />
-                        </a>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            /* Empty State */
-            <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-sm">
-              <div className="bg-gray-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Search size={32} className="text-gray-400" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">
-                No clubs found
-              </h3>
-              <p className=" max-w-md mx-auto">
-                We couldn't find any clubs matching "{searchQuery}" in the{" "}
-                {activeCategory} category. Try adjusting your filters.
-              </p>
-              <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setActiveCategory("All");
-                }}
-                className="mt-6 px-6 py-2 bg-black text-white text-sm font-bold rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                Clear Filters
-              </button>
-            </div>
-          )}
-        </div>
-       
-      </main>
-        <div className="border-2 shadow-lg p-5 rounded-2xl max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 m-10">
-          <h1 className="text-[24px] font-semibold mb-5">Announcements</h1>
-
-          {loadingAnnouncements && (
-            <p className="text-gray-500">Loading announcements...</p>
-          )}
-
-          {!loadingAnnouncements && announcements.length === 0 && (
-            <p className="text-gray-500">No announcements yet</p>
-          )}
-
-          {announcements.map((a) => (
-            <div
-              key={a.id}
-              className="p-4 rounded-lg mb-4 bg-white border"
+      {/* ================= CLUB CARDS ================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredClubs.map((club) => (
+          <div
+            key={club.id}
+            className="bg-white border rounded-xl p-4 shadow-sm space-y-3"
+          >
+            {/* STATUS */}
+            <span
+              className={`text-xs px-3 py-1 rounded-full inline-block ${
+                club.hiringOpen
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-700"
+              }`}
             >
-              <h3 className="text-[18px]">
-                From <span className="text-green-600 font-medium">{a.clubName}</span>
-              </h3>
-              <p className="font-light mt-1">{a.message}</p>
+              {club.hiringOpen ? "Hiring Open" : "Closed"}
+            </span>
+
+            {/* CLUB HEADER (LOGO + NAME) */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
+                {club.avatar ? (
+                  <img
+                    src={club.avatar}
+                    alt={club.clubName}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xs text-gray-400">Logo</span>
+                )}
+              </div>
+
+              <div>
+                <h3 className="font-semibold text-base">
+                  {club.clubName}
+                </h3>
+                <span className="text-xs text-blue-600">
+                  {club.category}
+                </span>
+              </div>
             </div>
-          ))}
-        </div>
+
+            {/* DESCRIPTION */}
+            <p className="text-sm text-gray-500 line-clamp-2">
+              {club.description || "No description provided"}
+            </p>
+
+            {/* FOOTER */}
+            <div className="flex items-center justify-between pt-2 border-t">
+              {club.hiringOpen ? (
+                <button
+                  onClick={() =>
+                    window.open(club.gFormLink, "_blank")
+                  }
+                  className="px-4 py-1.5 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-500"
+                >
+                  Apply
+                </button>
+              ) : (
+                <span className="text-sm text-gray-400">
+                  Applications Closed
+                </span>
+              )}
+
+              <a href={`mailto:${club.email}`}>
+                <Mail className="w-4 h-4 text-gray-500 hover:text-gray-700" />
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ================= ANNOUNCEMENTS ================= */}
+      {/* FILTER BAR */}
+      <div className="flex gap-2 mb-2">
+        {[
+          { label: "All", value: "ALL" },
+          { label: "This Week", value: "WEEK" },
+          { label: "This Month", value: "MONTH" },
+          { label: "Older", value: "OLDER" },
+        ].map((f) => (
+          <button
+            key={f.value}
+            onClick={() => setAnnouncementFilter(f.value)}
+            className={`px-3 py-1 rounded-full text-xs font-medium border transition
+              ${
+                announcementFilter === f.value
+                  ? "bg-blue-500 text-white border-blue-500"
+                  : "bg-white text-gray-600 border-gray-300 hover:bg-gray-50"
+              }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+      
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold">Club Announcements</h2>
+
+        {announcements.length === 0 && (
+          <div className="bg-white border rounded-xl p-4 text-sm text-gray-500">
+            No announcements yet
+          </div>
+        )}
+
+        {filteredAnnouncements.map((a) => (
+          <div
+            key={a.id}
+            className="bg-white border rounded-xl p-4 shadow-sm hover:shadow transition"
+          >
+            {/* HEADER */}
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold text-gray-900">
+                {a.clubName}
+              </p>
+
+              <span className="text-xs text-gray-400">
+                {formatTimeAgo(a.createdAt)}
+              </span>
+            </div>
+
+            {/* MESSAGE */}
+            <p className="text-sm text-gray-700 mt-2 whitespace-pre-line">
+              {a.message}
+            </p>
+          </div>
+        ))}
+      </div>
+
     </div>
   );
 };
 
-// --- PREVIEW WRAPPER ---
 export default ClubInfo;
