@@ -1,4 +1,4 @@
-import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp, orderBy,arrayUnion, increment} from "firebase/firestore";
+import { collection, getDocs, query, where, doc, getDoc ,setDoc, updateDoc, addDoc, serverTimestamp, orderBy,arrayUnion, increment, arrayRemove } from "firebase/firestore";
 import {db} from "./firebase"
 
 //get user by their id
@@ -290,15 +290,11 @@ export const createAnnouncement = async (clubId, data) => {
   return await addDoc(collection(db, "announcements"), {
     clubId,
     ...data,
-    analytics: {
-      views: 0,
-      clicks: 0,
-      registrations: 0,
-    },
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
 };
+
 
 /* ---------------- UPDATE ANNOUNCEMENT ---------------- */
 export const updateAnnouncement = async (id, data) => {
@@ -425,10 +421,6 @@ export const getClubPastEvents = async (clubId) => {
 };
 
 // club hiring 
-export const updateClubHiring = async (clubId, updates) => {
-  const ref = doc(db, "clubs", clubId);
-  await updateDoc(ref, updates);
-};
 
 //club preferences 
 
@@ -501,11 +493,35 @@ export const getClubAnalytics = async (clubId) => {
 };
 
 
-export const registerForEvent = async (eventId, studentId) => {
-  const eventRef = doc(db, "events", eventId);
+export const registerForEvent = async (eventId, userId) => {
+  const ref = doc(db, "events", eventId);
 
-  await updateDoc(eventRef, {
-    registeredUsers: arrayUnion(studentId),
+  await updateDoc(ref, {
+    registeredUsers: arrayUnion(userId),
     "analytics.registrations": increment(1),
+  });
+};
+export const updateClubHiring = async (clubId, hiringData) => {
+  console.log("🔥 updateClubHiring called");
+  console.log("clubId:", clubId);
+  console.log("hiringData:", hiringData);
+
+  const ref = doc(db, "clubs", clubId);
+
+  await updateDoc(ref, {
+    ...hiringData,
+    updatedAt: serverTimestamp(),
+  });
+
+  console.log("✅ Firestore update completed");
+};
+
+
+export const unregisterFromEvent = async (eventId, userId) => {
+  const ref = doc(db, "events", eventId);
+
+  await updateDoc(ref, {
+    registeredUsers: arrayRemove(userId),
+    "analytics.registrations": increment(-1),
   });
 };
