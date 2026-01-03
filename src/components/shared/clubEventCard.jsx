@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const getThemeClasses = (theme) => {
   const variants = {
@@ -24,8 +24,10 @@ const ClubEventCard = ({
   image,
   id,
   registeredMembers,
+  status
 }) => {
   const colors = getThemeClasses(theme);
+  const navigate = useNavigate();
 
   return (
     <div
@@ -71,19 +73,52 @@ const ClubEventCard = ({
         </p>
 
         <p className="text-sm text-gray-500">
-          Registered Users: {registeredMembers}
+          Registered Users: {Array.isArray(registeredMembers) ? registeredMembers.length : registeredMembers ?? 0}
         </p>
+
       </div>
 
       {/* Footer (always at bottom) */}
-      <div className="px-4 py-3 border-t flex justify-between items-center">
-        <Link to={`/club/edit-event/${id}`}>
-          <button className={`px-6 py-1.5 rounded text-sm ${colors.edit}`}>
-            Edit
-          </button>
-        </Link>
+      <div className="px-4 py-3 border-t flex justify-between items-center gap-2">
+        <div className="flex items-center gap-2">
+          {/* Edit button */}
+          <Link to={`/club/edit-event/${id}`}>
+            <button className={`px-6 py-1.5 rounded text-sm ${colors.edit}`}>
+              Edit
+            </button>
+          </Link>
 
-        <button className="p-2 rounded-full hover:bg-blue-50 transition">
+          {/* View Registrations — UPCOMING ONLY */}
+          {status === "upcoming" && (
+            <button
+              onClick={() => navigate(`/club/events/${id}/registrations`)}
+              className="text-xs px-3 py-1 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100"
+            >
+              View Registrations
+            </button>
+          )}
+        </div>
+
+        {/* Arrow button (unchanged) */}
+          {/* <button className="p-2 rounded-full hover:bg-blue-50 transition">
+            <svg
+              className="w-5 h-5 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div> */}
+
+
+        <button onClick={() => navigate(`/club/events/${id}`)} className="p-2 rounded-full hover:bg-blue-50 transition">
           <svg
             className="w-5 h-5 text-blue-500"
             fill="none"

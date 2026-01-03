@@ -220,6 +220,7 @@ const ClubDashboard = () => {
                   type={event.type}
                   theme={event.theme}
                   image={event.image}
+                  status={event.status}
                   registeredMembers={event.registeredUsers?.length || 0}
                 />
               ))

@@ -525,3 +525,39 @@ export const unregisterFromEvent = async (eventId, userId) => {
     "analytics.registrations": increment(-1),
   });
 };
+
+export const getRegisteredStudentsForEvent = async (eventId) => {
+  const eventRef = doc(db, "events", eventId);
+  const eventSnap = await getDoc(eventRef);
+
+  if (!eventSnap.exists()) return [];
+
+  const registeredUsers = eventSnap.data().registeredUsers || [];
+  if (registeredUsers.length === 0) return [];
+
+  const students = await Promise.all(
+    registeredUsers.map(async (uid) => {
+      const studentRef = doc(db, "students", uid);
+      const studentSnap = await getDoc(studentRef);
+
+      if (!studentSnap.exists()) return null;
+
+      const data = studentSnap.data();
+
+      return {
+        uid,
+        name:
+          data.profile?.displayName ||
+          data.fullName ||
+          "Unknown",
+        email: data.profile?.email || "—",
+        avatar:
+          data.avatar ||
+          data.profile?.photoURL ||
+          "https://api.dicebear.com/7.x/initials/svg",
+      };
+    })
+  );
+
+  return students.filter(Boolean);
+};

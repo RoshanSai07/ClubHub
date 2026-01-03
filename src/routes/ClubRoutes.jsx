@@ -1,7 +1,4 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { auth } from "@/firebase/firebase";
-import { getUserById } from "@/firebase/collections";
 
 import ClubDashboard from "@/pages/club/ClubDashboard";
 import CreateEventPage from "@/pages/club/CreateEventPage";
@@ -12,6 +9,7 @@ import Settings from "@/pages/club/Settings";
 import NotFoundPage from "@/pages/public/NotFoundPage";
 import Announcements from "@/pages/club/AnnouncementsPage";
 import EventAnalytics from "@/pages/club/eventAnalytics";
+import EventRegistrations from "@/pages/club/EventRegistrations";
 import ClubAnalytics from "@/pages/club/ClubAnalytics";
 const ClubRoutes = () => {
   // const [userDoc, setUserDoc] = useState(null);
@@ -66,6 +64,8 @@ const ClubRoutes = () => {
         path="events/:eventId/analytics"
         element={<EventAnalytics />}
       />
+      <Route path="events/:eventId/registrations" element={<EventRegistrations />} />
+
       <Route path="draftEvents" element={<DraftEventsPage />} />
       <Route path="settings" element={<Settings />} />
       <Route path="announcements" element={<Announcements />} />
