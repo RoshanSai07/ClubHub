@@ -19,7 +19,6 @@ import {
   Star,
   Tag,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 const StudentDashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -34,39 +33,29 @@ const StudentDashboard = () => {
   const pastScrollRef = useRef(null);
   const recommendedScrollRef = useRef(null);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
-        navigate("/login");
+        setLoading(false);
         return;
       }
 
+      setLoading(true);
+
       try {
-        const studentData = await getStudentById(user.uid);
-
-        if (studentData?.role !== "STUDENT") {
-          console.error("Access denied: not a student account");
-          alert(
-            "This dashboard is only available for Student accounts. Please go back."
-          );
-          navigate(-1);
-          return;
-        }
-
-        setStudent(studentData);
-
-        const [upcoming, past, hiringCount] = await Promise.all([
+        const [upcoming, past, studentData, hiringCount] = await Promise.all([
           getUpcomingRegisteredEvents(user.uid),
           getStudentPastEvents(user.uid),
+          getStudentById(user.uid),
           getOpenHiringCount(),
         ]);
 
+        setOpenHiringCount(hiringCount);
         setUpcomingEvents(upcoming);
         setPastEvents(past);
-        setOpenHiringCount(hiringCount);
+        setStudent(studentData);
 
+        // Get recommended events based on student interests
         const interests = studentData.preferences?.interest || [];
         setStudentInterests(interests);
 
@@ -75,8 +64,7 @@ const StudentDashboard = () => {
           setRecommendedEvents(recommended);
         }
       } catch (error) {
-        console.error("Error loading student dashboard:", error);
-        alert("Failed to load dashboard");
+        console.error("Error loading dashboard:", error);
       } finally {
         setLoading(false);
       }
@@ -127,13 +115,13 @@ const StudentDashboard = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => scroll(ref, "left")}
-              className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors duration-200"
+              className="cursor-pointer p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors duration-200"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <button
               onClick={() => scroll(ref, "right")}
-              className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors duration-200"
+              className="cursor-pointer p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors duration-200"
             >
               <ChevronRight className="w-5 h-5" />
             </button>
@@ -147,7 +135,7 @@ const StudentDashboard = () => {
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {events.map((event) => (
-              <div key={event.id} className="shrink-0 w-auto">
+              <div key={event.id} className="shrink-0 w-70">
                 <EventCard
                   {...event}
                   variant="details"
@@ -180,7 +168,7 @@ const StudentDashboard = () => {
           <h1 className="text-3xl font-bold text-gray-900">
             Welcome back,{" "}
             <span className="text-blue-600">
-              {student.fullName || "Student"}
+              {student?.profile.displayName || "Student"}
             </span>
           </h1>
           <p className="text-gray-600 mt-2">
@@ -275,13 +263,13 @@ const StudentDashboard = () => {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => scroll(recommendedScrollRef, "left")}
-                      className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                      className="cursor-pointer p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors duration-200"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => scroll(recommendedScrollRef, "right")}
-                      className="p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                      className="cursor-pointer p-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-gray-600 hover:text-gray-900 transition-colors duration-200"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
@@ -334,7 +322,7 @@ const StudentDashboard = () => {
                     style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                   >
                     {recommendedEvents.map((event) => (
-                      <div key={event.id} className="shrink-0 w-auto">
+                      <div key={event.id} className="shrink-0 w-70">
                         <EventCard
                           {...event}
                           variant="details"
