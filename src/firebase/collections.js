@@ -19,9 +19,14 @@ export const getUserById = async (uid) => {
 
 export const createUser = async (uid, data) => {
   const ref = doc(db, "users", uid);
+  const ADMIN_EMAIL = "randomspamshaha@gmail.com";
   await setDoc(ref, {
     uid,
     ...data,
+    email: data.email,
+    status: "ACTIVE",
+    role: data.role,
+    isAdmin: ADMIN_EMAIL.includes(data.email),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -566,4 +571,15 @@ export const getRegisteredStudentsForEvent = async (eventId) => {
   );
 
   return students.filter(Boolean);
+};
+
+export const getOpenHiringCount = async () => {
+  const q = query(
+    collection(db, "clubs"),
+    where("hiringOpen", "==", true),
+    where("gFormLink", "!=", "") // ensure form exists
+  );
+
+  const snapshot = await getDocs(q);
+  return snapshot.size;
 };

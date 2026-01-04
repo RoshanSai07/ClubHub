@@ -2,7 +2,7 @@
 import RecommendedSection from '@/components/layout/DashboardS/Recommended'
 import EventCard from '@/components/shared/eventCard'
 import React,{ useEffect, useState, useRef } from 'react'
-import { getUpcomingRegisteredEvents,getStudentPastEvents } from '@/firebase/collections'
+import { getUpcomingRegisteredEvents,getStudentPastEvents, getOpenHiringCount } from '@/firebase/collections'
 import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from '@/firebase/firebase'
 import { getStudentById } from "@/firebase/collections";
@@ -14,7 +14,7 @@ const StudentDashboard = () => {
   const [pastEvents, setPastEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [student, setStudent] = useState(null);
-
+  const [openHiringCount, setOpenHiringCount] = useState(0);
   const scrollContainerRef = useRef(null);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -25,12 +25,14 @@ const StudentDashboard = () => {
 
       setLoading(true);
 
-      const [upcoming, past,studentData] = await Promise.all([
+      const [upcoming, past,studentData,hiringCount] = await Promise.all([
         getUpcomingRegisteredEvents(user.uid),
         getStudentPastEvents(user.uid),
         getStudentById(user.uid),
+        getOpenHiringCount(),
       ]);
 
+      setOpenHiringCount(hiringCount);
       setUpcomingEvents(upcoming);
       setPastEvents(past);
       setStudent(studentData);
@@ -72,7 +74,7 @@ const StudentDashboard = () => {
         <span className="font-light"> Events Attended</span>
        </div>
        <div className="cH text-yellow-500 flex flex-col items-center">
-        <p className="text-[36px]">-</p>
+        <p className="text-[36px]">{openHiringCount}</p>
         <span className="font-light">Club Hiring</span>
        </div>
     </div>
@@ -88,6 +90,7 @@ const StudentDashboard = () => {
            {upcomingEvents.map((event) => (
             <EventCard
               {...event}
+              
               path={`/student/events/${event.id}`}
             />
         ))}
@@ -149,6 +152,7 @@ const StudentDashboard = () => {
                 key={event.id}
                 variant="feedback"
                 {...event}
+                feedbackFormLink={event.feedbackFormLink}
                 path={`/student/events/${event.id}`}
               />
             ))}
