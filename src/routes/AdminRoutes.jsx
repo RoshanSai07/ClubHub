@@ -33,7 +33,7 @@ const AdminRoutes = () => {
     return () => unsub();
   }, []);
 
-  if (allowed === null) {
+  if (loading) {
     return <Loader message="Checking Permissions..." />;
   }
 
