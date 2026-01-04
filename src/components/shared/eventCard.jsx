@@ -13,10 +13,16 @@ const getThemeClasses = (theme) => {
   return variants[theme] || variants.blue;
 };
 
-const EventCard = ({id,title, description, date, type, theme, variant = 'defualt' ,image,showAnalytics = false,path, onClick,}) => {
+const EventCard = ({id,title, description, date, type, theme, variant = 'defualt' ,image,showAnalytics = false,path, onClick,feedbackFormLink,}) => {
   const colors = getThemeClasses(theme);
    const navigate=useNavigate();
-
+  const handleFeedbackClick = () => {
+    if (feedbackFormLink && feedbackFormLink.trim() !== "") {
+      window.open(feedbackFormLink, "_blank");
+    } else {
+      alert("No feedback form available yet");
+    }
+  };
   return (
     <div className="min-w-70 w-70 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-sm flex flex-col snap-center transition-all h-90 cursor-pointer hover:scale-[1.01] hover:shadow-xl hover:-translate-y-1  duration-300 group "
     >
@@ -66,14 +72,18 @@ const EventCard = ({id,title, description, date, type, theme, variant = 'defualt
   ) : (
     // ✅ Default behavior (Existing)
     variant === "feedback" ? (
-      <button className={`px-4 py-2 rounded-lg text-sm text-white transition-colors 
+    <button
+      onClick={handleFeedbackClick}
+      className={`px-4 py-2 rounded-lg text-sm text-white transition-colors 
         ${theme === "yellow"
           ? "bg-yellow-400 hover:bg-yellow-500"
           : theme === "red"
           ? "bg-red-500 hover:bg-red-600"
-          : "bg-blue-500 hover:bg-blue-600"}`}>
-        Feedback
-      </button>
+          : "bg-blue-500 hover:bg-blue-600"}`}
+    >
+      Feedback
+    </button>
+
     ) : (
       <button className="p-2 hover:bg-blue-50 rounded-full transition-colors group">
         <svg
