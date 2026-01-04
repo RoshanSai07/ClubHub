@@ -1,4 +1,4 @@
-export function buildChatPrompt({ message, user, student, events }) {
+export function buildChatPrompt({ message, user, student, events, now }) {
   return `
 You are ClubHub AI, a fast in-app assistant for a college club management platform.
 
@@ -13,8 +13,22 @@ STRICT RULES (DO NOT BREAK):
 - Max 5 events
 - All fields must exist
 
+CURRENT TIME CONTEXT (AUTHORITATIVE):
+- Current ISO Time: ${now.iso}
+- Local Time: ${now.local}
+- Timezone: ${now.timezone}
+
+IMPORTANT TIME RULES (MANDATORY):
+- Interpret "today", "tomorrow", "yesterday", "next week" ONLY using the above time
+- NEVER assume a date on your own
+- If date meaning is ambiguous, ask for clarification in notes
+- Do NOT show past events unless explicitly asked
+
 USER ROLE:
 ${user?.role ?? "student"}
+
+STUDENT CONTEXT (READ ONLY):
+${JSON.stringify(student, null, 2)}
 
 USER MESSAGE:
 "${message}"
@@ -40,7 +54,8 @@ INTENT RULES:
 - If events overlap, MUST add a note about overlap
 - If information is incomplete, add a note asking for clarification
 - If navigation is mentioned, add a note with where to find it
-- If there is nothing special to mention, include an empty notes array
+- If student has no academic schedule and question is schedule-related, add a note saying timetable is not uploaded
+- Use student interests to prioritize events if relevant
 
 RESPONSE FORMAT (ALL FIELDS REQUIRED):
 {

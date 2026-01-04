@@ -40,7 +40,8 @@ const ProfileInfo = () => {
         website: data.website || "",
         instagram: data.instagram || "",
         linkedin: data.linkedin || "",
-        avatar: data.avatar || "https://api.dicebear.com/7.x/fun-emoji/svg?seed=User",
+        avatar:
+          data.avatar || "https://api.dicebear.com/7.x/fun-emoji/svg?seed=User",
       });
     };
 
@@ -53,19 +54,16 @@ const ProfileInfo = () => {
     if (!file) return;
 
     const user = auth.currentUser;
-    if(!user) return;
+    if (!user) return;
 
-    const imageUrl = await uploadImage(
-      file, `avatars/clubs/${user.uid}.jpg`
-    );
+    const imageUrl = await uploadImage(file, `avatars/clubs/${user.uid}.jpg`);
 
-    setFormData((prev) =>({
+    setFormData((prev) => ({
       ...prev,
       avatar: imageUrl,
     }));
 
-    await onUpdate({avatar: imageUrl});
-
+    await onUpdate({ avatar: imageUrl });
   };
 
   const handleChange = (e) => {
@@ -105,12 +103,11 @@ const ProfileInfo = () => {
         </span>
         <h2 className="text-[24px]">Profile Info</h2>
       </div>
-
-      <div className="bg-white p-5 rounded-md border flex flex-col">
+      <div className="bg-white p-10 rounded-md border flex flex-col">
         <div className="self-end">
           {!isEditing ? (
             <button
-              className="border px-4 py-2 rounded-sm flex gap-2 items-center"
+              className="border px-4 py-2 rounded-sm flex gap-2 text-green-600 text-sm cursor-pointer items-center"
               onClick={() => setIsEditing(true)}
             >
               <span className="material-symbols-outlined">edit</span>
@@ -118,7 +115,7 @@ const ProfileInfo = () => {
             </button>
           ) : (
             <button
-              className="border px-4 py-2 rounded-sm flex gap-2 items-center"
+              className="border px-4 py-2 rounded-sm flex gap-2 text-blue-600 text-sm cursor-pointer items-center"
               onClick={handleSave}
             >
               <span className="material-symbols-outlined">save</span>
@@ -158,10 +155,34 @@ const ProfileInfo = () => {
           {/* Fields */}
           <div className="flex-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <InputField label="Club Name" name="clubName" value={formData.clubName} isEditing={isEditing} onChange={handleChange} />
-              <InputField label="Club Head Name" name="clubHeadName" value={formData.clubHeadName} isEditing={isEditing} onChange={handleChange} />
-              <InputField label="Email Address" name="email" value={formData.email} isEditing={isEditing} onChange={handleChange} />
-              <InputField label="Since Year" name="sinceYear" value={formData.sinceYear} isEditing={isEditing} onChange={handleChange} />
+              <InputField
+                label="Club Name"
+                name="clubName"
+                value={formData.clubName}
+                isEditing={isEditing}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Club Head Name"
+                name="clubHeadName"
+                value={formData.clubHeadName}
+                isEditing={isEditing}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Email Address"
+                name="email"
+                value={formData.email}
+                isEditing={isEditing}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Since Year"
+                name="sinceYear"
+                value={formData.sinceYear}
+                isEditing={isEditing}
+                onChange={handleChange}
+              />
             </div>
 
             {/* About */}
@@ -184,9 +205,27 @@ const ProfileInfo = () => {
 
             {/* Social */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3">
-              <InputField label="Website" name="website" value={formData.website} isEditing={isEditing} onChange={handleChange} />
-              <InputField label="Instagram" name="instagram" value={formData.instagram} isEditing={isEditing} onChange={handleChange} />
-              <InputField label="LinkedIn" name="linkedin" value={formData.linkedin} isEditing={isEditing} onChange={handleChange} />
+              <InputField
+                label="Website"
+                name="website"
+                value={formData.website}
+                isEditing={isEditing}
+                onChange={handleChange}
+              />
+              <InputField
+                label="Instagram"
+                name="instagram"
+                value={formData.instagram}
+                isEditing={isEditing}
+                onChange={handleChange}
+              />
+              <InputField
+                label="LinkedIn"
+                name="linkedin"
+                value={formData.linkedin}
+                isEditing={isEditing}
+                onChange={handleChange}
+              />
             </div>
           </div>
         </div>

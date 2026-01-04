@@ -4,6 +4,7 @@ import { uploadImage } from "@/firebase/storage";
 const ProfileInfoSection = ({ student, onUpdate }) => {
   const fileInputRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -17,7 +18,7 @@ const ProfileInfoSection = ({ student, onUpdate }) => {
     if (!student) return;
 
     setFormData({
-      fullName: student.fullName || "",
+      fullName: student.profile.displayName || "",
       email: student.profile.email || "",
       phone: student.phone || "",
       avatar:
@@ -37,19 +38,19 @@ const ProfileInfoSection = ({ student, onUpdate }) => {
     if (!file) return;
 
     const user = auth.currentUser;
-    if(!user) return;
+    if (!user) return;
 
     const imageUrl = await uploadImage(
-      file, `avatars/students/${user.uid}.jpg`
+      file,
+      `avatars/students/${user.uid}.jpg`
     );
 
-    setFormData((prev) =>({
+    setFormData((prev) => ({
       ...prev,
       avatar: imageUrl,
     }));
 
-    await onUpdate({avatar: imageUrl});
-
+    await onUpdate({ avatar: imageUrl });
   };
 
   // 🔹 Input change
@@ -59,15 +60,22 @@ const ProfileInfoSection = ({ student, onUpdate }) => {
   };
 
   // 🔹 Save → parent → Firestore
-  const handleSave = () => {
-    onUpdate({
-      fullName: formData.fullName,
-      phone: formData.phone,
-      avatar: formData.avatar,
-      
-    });
+  const handleSave = async () => {
+    if (isSaving) return;
 
-    setIsEditing(false);
+    setIsSaving(true);
+
+    try {
+      await onUpdate({
+        fullName: formData.fullName,
+        phone: formData.phone,
+        avatar: formData.avatar,
+      });
+
+      setIsEditing(false);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   if (!student) {
@@ -86,34 +94,52 @@ const ProfileInfoSection = ({ student, onUpdate }) => {
         <h1 className="text-[26px]">Profile Info</h1>
       </div>
       <div className="bg-white p-5 rounded-md border flex flex-col">
-        <div className="flex items-center justify-end ">
+        <div className="flex items-center justify-end">
           {!isEditing ? (
-            <div className="border px-4 py-2 rounded-sm flex  gap-2 items-center ">
-              <span className="material-symbols-outlined">edit</span>
-              <button
-                className="text-blue-600 text-sm"
-                onClick={() => setIsEditing(true)}
-              >
-                Edit
-              </button>
-            </div>
+            <button
+              className="cursor-pointer border px-4 py-2 rounded-sm flex gap-2 items-center
+                 text-blue-600 disabled:opacity-50"
+              onClick={() => setIsEditing(true)}
+            >
+              <span className="material-symbols-outlined text-[20px]">
+                edit
+              </span>
+              <span className="text-sm">Edit</span>
+            </button>
           ) : (
-            <div className="border px-4 py-2 rounded-sm flex  gap-2 items-center">
-              <span className="material-symbols-outlined">save</span>
-              <button className="text-green-600 text-sm" onClick={handleSave}>
-                Save
-              </button>
-            </div>
+            <button
+              className="cursor-pointer border px-4 py-2 rounded-sm flex gap-2 items-center
+                 disabled:opacity-60"
+              onClick={handleSave}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-sm text-green-600">Saving…</span>
+                </>
+              ) : (
+                <>
+                  <span className="material-symbols-outlined text-[20px] text-green-600">
+                    save
+                  </span>
+                  <span className="text-sm text-green-600">Save</span>
+                </>
+              )}
+            </button>
           )}
         </div>
 
         {/* Fields */}
-        <div className="flex gap-5 md:flex-row md:items-center flex-col">
+        <div className="flex gap-5 md:flex-row md:items-center px-7 py-5 flex-col">
           <div className="relative p-2">
             <img
-              src={formData.avatar || "https://api.dicebear.com/7.x/fun-emoji/svg?seed=User"}
+              src={
+                formData.avatar ||
+                "https://api.dicebear.com/7.x/fun-emoji/svg?seed=User"
+              }
               alt="avatar"
-              className="w-44 h-44 rounded-full bg-blue-100 relative"
+              className="w-50 h-50 rounded-full bg-blue-100 relative"
             />
             {isEditing && (
               <div>
@@ -126,7 +152,7 @@ const ProfileInfoSection = ({ student, onUpdate }) => {
                   accept="image/*"
                 />
                 <span
-                  className="material-symbols-outlined p-2 bg-blue-100 text-blue-500 rounded-full absolute top-35 right-5"
+                  className="material-symbols-outlined p-2 bg-blue-100 text-blue-500 rounded-full absolute top-37 right-2"
                   onClick={handleImageClick}
                 >
                   photo_camera
@@ -134,7 +160,7 @@ const ProfileInfoSection = ({ student, onUpdate }) => {
               </div>
             )}
           </div>
-          <div className="flex flex-col md:gap-5 gap-2 w-[80%]">
+          <div className="flex flex-col md:gap-5 gap-2 w-[70%]">
             {/* Name */}
             <div>
               <label className="text-sm text-gray-500">Display Name</label>

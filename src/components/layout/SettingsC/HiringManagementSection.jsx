@@ -39,7 +39,7 @@ const HiringManagementSection = () => {
               if (hiringOpen && !formLink.trim()) {
                 alert("Cannot enable hiring without a Google Form link.");
                 return;
-              }              
+              }
               // SAVE to Firestore
               await updateClubHiring(clubId, {
                 hiringOpen,
@@ -71,10 +71,13 @@ const HiringManagementSection = () => {
 
             setHiringOpen(!hiringOpen);
           }}
-
           className={`w-12 h-6 flex items-center rounded-full p-1 transition
             ${hiringOpen ? "bg-green-500" : "bg-gray-300"}
-            ${(!isEditing || !formLink.trim()) ? "opacity-50 cursor-not-allowed" : ""}
+            ${
+              !isEditing || !formLink.trim()
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }
           `}
         >
           <div
@@ -87,9 +90,7 @@ const HiringManagementSection = () => {
 
       {/* Form Link */}
       <div>
-        <label className="text-sm text-gray-600">
-          Google Form Link
-        </label>
+        <label className="text-sm text-gray-600">Google Form Link</label>
         <input
           type="url"
           value={formLink}

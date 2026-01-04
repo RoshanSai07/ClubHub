@@ -37,9 +37,7 @@ const PreferencesSection = ({ club }) => {
     if (!isEditing) return;
 
     setSelectedPreferences((prev) =>
-      prev.includes(pref)
-        ? prev.filter((p) => p !== pref)
-        : [...prev, pref]
+      prev.includes(pref) ? prev.filter((p) => p !== pref) : [...prev, pref]
     );
   };
 
@@ -66,8 +64,7 @@ const PreferencesSection = ({ club }) => {
       <div className="flex items-center gap-3">
         <h2 className="text-[26px]">Preferences</h2>
       </div>
-
-      <div className="bg-white p-5 rounded-md border flex flex-col gap-3">
+      <div className="bg-white p-10 rounded-md border flex flex-col gap-3">
         <div className="flex justify-between items-center">
           <p className="text-[18px] font-light">
             Help students find your club easily
@@ -75,14 +72,14 @@ const PreferencesSection = ({ club }) => {
 
           {!isEditing ? (
             <button
-              className="border px-4 py-2 rounded-sm"
+              className="border px-4 py-2 rounded-sm cursor-pointer"
               onClick={() => setIsEditing(true)}
             >
               Edit
             </button>
           ) : (
             <button
-              className="border px-4 py-2 rounded-sm text-green-600"
+              className="border px-4 py-2 rounded-sm text-green-600 cursor-pointer"
               onClick={handleSave}
             >
               Save

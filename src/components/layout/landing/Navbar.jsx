@@ -2,15 +2,12 @@ import { Link } from "react-router-dom";
 import ButtonOutline from "../../shared/button1";
 import ButtonBg from "../../shared/button2";
 
-
-
-
 const Navbar = () => {
   return (
-    <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md  z-50 border-b border-gray-200 h-18">
+    <div className="navbar bg-base-100 shadow-sm fixed top-0 left-0 w-full backdrop-blur-md z-50 border-b border-gray-200 h-16 px-5">
       <div className="flex-1">
-        <div className="logo-cnt flex items-center font-['Inter'] gap-1">
-            <svg
+        <div className="logo-cnt flex items-center font-['Inter'] gap-3">
+          <svg
             width="36"
             height="32"
             viewBox="0 0 36 32"
@@ -43,19 +40,12 @@ const Navbar = () => {
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-xl font-bold">ClubHub</span>
+          <span className="text-xl font-normal">ClubHub</span>
         </div>
-          
       </div>
-      <div className="flex-none">
-        <ul className="menu menu-horizontal px-1 gap-3">
-          <li>
-         <ButtonOutline text="Login" url="/login"></ButtonOutline>
-          </li>
-          <li>
-           <ButtonBg text="Join Platform" url="/signup1" className="background-blue-"></ButtonBg>
-          </li>
-        </ul>
+      <div className="flex items-center gap-3">
+        <ButtonOutline text="Login" url="/login" />
+        <ButtonBg text="Join Platform" url="/signup1" />
       </div>
     </div>
   );

@@ -11,34 +11,34 @@ import {
   getClubUpcomingEvents,
   getClubPastEvents,
   getUserById,
-  getClubById
+  getClubById,
 } from "@/firebase/collections";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
+import Loader from "@/components/shared/Loader";
 
 const ClubDashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [club,setClub] = useState(null);
+  const [club, setClub] = useState(null);
   const navigate = useNavigate();
 
   // TEMP (replace later with real club auth)
-    useEffect(() => {
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) return;
 
-    const userDoc = await getUserById(user.uid);
+      const userDoc = await getUserById(user.uid);
 
-    if (userDoc?.role !== "CLUB") {
-      console.error("Not a club account");
-      return;
-    }
+      if (userDoc?.role !== "CLUB") {
+        console.error("Not a club account");
+        return;
+      }
 
-    // fetch club profile
-    const clubData = await getClubById(user.uid);
-    setClub(clubData);
-
+      // fetch club profile
+      const clubData = await getClubById(user.uid);
+      setClub(clubData);
 
       // ✅ USE AUTH UID AS CLUB ID
       const [upcoming, past] = await Promise.all([
@@ -53,65 +53,77 @@ const ClubDashboard = () => {
 
     return () => unsubscribe();
   }, []);
+
   if (loading) {
-    return <div className="p-10">Loading dashboard...</div>;
+    return (
+      <Loader
+        message="Loading your dashboard…"
+        subMessage="Fetching events and club data"
+        variant="skeleton"
+      />
+    );
   }
-  
+
   return (
-
-    <div className="overflow-y-scroll no-scrollbar h-screen">
+    <div className="overflow-y-scroll  no-scrollbar h-screen">
       <Navbar />
-      <div className="mt-19 bg-[#f8f9fa] p-16">
-        <div className="">
-          <p className="font-semibold text-[32px]">
-            <span className="text-green-500 font-semibold text-[32px]">
-              {club?.clubName || "Club"}
-            </span>
-             Dashboard
-          </p>
-          <p>Manage your events and check your club performance</p>
-        </div>
-        <div className="flex gap-4 mt-10">
-          <div className="one  border-2 border-[#d9d9d9] shadow-sm rounded-2xl pt-5 pl-5 w-[30%]  bg-white">
-            <p className="font-medium text-[24px]">Club Info</p>
-            <div className="font-light p-3">
-              {!club ? (
-                <p className="text-gray-400">Loading club info...</p>
-              ) : (
-                <>
-                  <p>Name: {club.clubName}</p>
-                  <p>President: {club.presidentName}</p>
-                  <p>Members: {club.membersCount ?? 0}</p>
-                </>
-              )}
+      <div className="bg-[#f8f9fa] px-8 py-10 mt-15">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* TOP ROW: TITLE + PRIMARY ACTION */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div>
+              <h1 className="text-3xl font-semibold text-gray-900">
+                <span className="text-green-500">
+                  {club?.clubName || "Club"}
+                </span>{" "}
+                Dashboard
+              </h1>
+              <p className="text-gray-500 mt-1">
+                Manage events, members, and announcements for your club
+              </p>
             </div>
 
+            {/* PRIMARY CTA */}
+            <Link
+              to="/club/create-event"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white border-gray-300 border-2 text-black rounded-lg font-medium hover:border-green-500 transition w-fit"
+            >
+              <Plus size={30} className="text-green-500"></Plus>
+              Create Event
+            </Link>
           </div>
-          <Link to="/club/create-event" className="w-[25%]">
-          <div className="two border border-[#d9d9d9] shadow-sm rounded-2xl p-8 w-full  bg-white flex flex-col items-center">
-            <Plus className="text-green-500 h-20 w-20" />
-            <span className="font-light ">Create New Event</span>
-          </div>
-          </Link>
-          <div className="three border-2 border-[#d9d9d9] shadow-sm rounded-2xl w-[30%]  justify-center bg-white flex flex-col font-light"
-            
-          >
-            <div className="flex items-center gap-3 p-2 border-b" onClick={() => navigate("/club/analytics")} >
-              {" "}
-              <BarChart3 className="w-8 text-yellow-500" />
-              View Analytics
-            </div>
-            <div className="flex items-center p-2 gap-2 border-b">
-              <Users className="w-8 text-blue-500" />
-              Manage Members
-            </div>
-            <div className="flex items-center p-2  gap-2 cursor-pointer" onClick={()=>{navigate("/club/announcements");}}>
-              <Send className="w-8  text-red-500" />
-              Send Announcement
+
+          {/* QUICK ACTIONS */}
+          <div className="bg-white border rounded-md p-6">
+            <div className="flex flex-col md:flex-row gap-6 justify-around">
+              <button
+                onClick={() => navigate("/club/analytics")}
+                className="flex items-center gap-3 text-gray-700 hover:text-yellow-600 cursor-pointer transition"
+              >
+                <BarChart3 className="w-6 h-6" />
+                <span className="font-medium">View Analytics</span>
+              </button>
+
+              <button
+                onClick={() => navigate("/club/members")}
+                className="flex items-center gap-3 text-gray-700 hover:text-blue-600 cursor-pointer transition"
+              >
+                <Users className="w-6 h-6" />
+                <span className="font-medium">Manage Members</span>
+              </button>
+
+              <button
+                onClick={() => navigate("/club/announcements")}
+                className="flex items-center gap-3 text-gray-700 hover:text-red-600 cursor-pointer transition"
+              >
+                <Send className="w-6 h-6" />
+                <span className="font-medium">Send Announcement</span>
+              </button>
             </div>
           </div>
         </div>
       </div>
+
       <div className="two flex justify-evenly py-8 bg-white">
         <div className="uP text-blue-500 flex flex-col items-center">
           <p className="text-[36px]">{upcomingEvents.length}</p>
@@ -128,56 +140,61 @@ const ClubDashboard = () => {
       </div>
       <div className="p-16 bg-[#f8f9fa] flex gap-8 flex-col">
         <span className="text-xl font-semibold ">MY CLUB'S EVENTS</span>
-          <div className="flex flex-wrap gap-10">
-            {upcomingEvents.length === 0 ? (
-              <h1>No Upcoming Events</h1>
-            ) : (
-              upcomingEvents.map((event) => (
-                <ClubEventCard
-                  key={event.id}
-                  id={event.id}
-                  title={event.title}
-                  description={event.description}
-                  date={event.date}
-                  type={event.type}
-                  theme={event.theme}
-                  image={event.image}
-                  status={event.status}
-                  registeredMembers={event.registeredUsers?.length || 0}
-                />
-              ))
-            )}
-          </div>
-      </div>
-    {/* Past Events */}
-    <div className="bg-white p-16 flex flex-col gap-8">
-      <span className="font-semibold text-xl">MY PAST EVENTS</span>
-      <div className="flex gap-10 flex-wrap">
-        {pastEvents.length === 0 ? (
-          <p>No past events</p>
-        ) : (
-          pastEvents.map((event) => (
-            <EventCard
-              key={event.id}
-              id ={event.id}
-              {...event}
-              showAnalytics
-            />
-          ))
-        )}
-      </div>
-    </div>
-      <div className="flex p-16 bg-[#f8f9fa] justify-between">
-        <div>
-          <p className="text-2xl">Is your club hiring members?</p>
-          <p className="text-xl font-light">Yes? Then post your status in the clubs page to find new talented members</p>
+        <div className="flex flex-wrap gap-10">
+          {upcomingEvents.length === 0 ? (
+            <h1>No Upcoming Events</h1>
+          ) : (
+            upcomingEvents.map((event) => (
+              <ClubEventCard
+                key={event.id}
+                id={event.id}
+                title={event.title}
+                description={event.description}
+                date={event.date}
+                type={event.type}
+                theme={event.theme}
+                image={event.image}
+                status={event.status}
+                registeredMembers={event.registeredUsers?.length || 0}
+              />
+            ))
+          )}
         </div>
-        <div className="bg-yellow-500 text-white rounded-2xl flex items-center px-4 cursor-pointer"  onClick={() =>navigate("/club/settings")}>
+      </div>
+      {/* Past Events */}
+      <div className="bg-white p-16 flex flex-col gap-8">
+        <span className="font-semibold text-xl">MY PAST EVENTS</span>
+        <div className="flex gap-10 flex-wrap">
+          {pastEvents.length === 0 ? (
+            <p>No past events</p>
+          ) : (
+            pastEvents.map((event) => (
+              <EventCard
+                key={event.id}
+                id={event.id}
+                {...event}
+                showAnalytics
+              />
+            ))
+          )}
+        </div>
+      </div>
+      <div className="flex flex-col lg:flex-row p-25 bg-[#f8f9fa] gap-5 justify-between">
+        <div className="text-center lg:text-left">
+          <p className="text-xl ">Is your club hiring members?</p>
+          <p className="text-md font-light">
+            Yes? Then post your status in the clubs page to find new talented
+            members
+          </p>
+        </div>
+        <div
+          className="bg-yellow-500 text-white rounded-lg h-fit flex items-center justify-center px-10 py-2 cursor-pointer"
+          onClick={() => navigate("/club/settings")}
+        >
           <p>Update your club status</p>
         </div>
-    
       </div>
-       <FooterPage/>
+      <FooterPage />
     </div>
   );
 };

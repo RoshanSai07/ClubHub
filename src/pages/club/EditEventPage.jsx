@@ -14,11 +14,7 @@ import {
 import { useForm, useFieldArray } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-  doc,
-  updateDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
 import { getEventById, getUserById } from "@/firebase/collections";
 import { auth } from "@/firebase/firebase";
@@ -49,7 +45,7 @@ export default function EditEventPage() {
     control,
     reset,
     formState: { isValid, errors },
-  } = useForm({ 
+  } = useForm({
     mode: "onChange",
     shouldUnregister: false,
     defaultValues: {
@@ -97,25 +93,26 @@ export default function EditEventPage() {
           navigate(-1);
           return;
         }
-        reset({
-          title: event.title,
-          description: event.description,
-          attendees: event.attendees,
-          venue: event.location.venue,
-          college: event.location.college,
-          area: event.location.area,
-          startDate: toDateInput(event.startDateTime),
-          startTime: toTimeInput(event.startDateTime),
-          endDate: toDateInput(event.endDateTime),
-          endTime: toTimeInput(event.endDateTime),
-          highlights: event.highlights?.length ? event.highlights : [""],
-          feedbackFormLink: event.feedbackFormLink || "",
-        },
-        {
-          keepDirty: false,
-          keepTouched: false,
-        }
-      );
+        reset(
+          {
+            title: event.title,
+            description: event.description,
+            attendees: event.attendees,
+            venue: event.location.venue,
+            college: event.location.college,
+            area: event.location.area,
+            startDate: toDateInput(event.startDateTime),
+            startTime: toTimeInput(event.startDateTime),
+            endDate: toDateInput(event.endDateTime),
+            endTime: toTimeInput(event.endDateTime),
+            highlights: event.highlights?.length ? event.highlights : [""],
+            feedbackFormLink: event.feedbackFormLink || "",
+          },
+          {
+            keepDirty: false,
+            keepTouched: false,
+          }
+        );
 
         setLoading(false);
       } catch (err) {
@@ -186,7 +183,7 @@ export default function EditEventPage() {
               <ArrowLeft className="w-4 h-4" />
               Back
             </button>
-            
+
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -227,8 +224,12 @@ export default function EditEventPage() {
                 <ClipboardEdit className="w-6 h-6 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Edit Event</h2>
-                <p className="text-sm text-gray-500">Update your event details</p>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Edit Event
+                </h2>
+                <p className="text-sm text-gray-500">
+                  Update your event details
+                </p>
               </div>
             </div>
           </div>
@@ -258,14 +259,18 @@ export default function EditEventPage() {
                 Description *
               </label>
               <textarea
-                {...register("description", { required: "Description is required" })}
+                {...register("description", {
+                  required: "Description is required",
+                })}
                 placeholder="Describe your event in detail"
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 min-h-[140px] ${
                   errors.description ? "border-red-300" : "border-gray-300"
                 }`}
               />
               {errors.description && (
-                <p className="text-sm text-red-600">{errors.description.message}</p>
+                <p className="text-sm text-red-600">
+                  {errors.description.message}
+                </p>
               )}
             </div>
 
@@ -279,9 +284,9 @@ export default function EditEventPage() {
                 </label>
                 <input
                   type="number"
-                  {...register("attendees", { 
+                  {...register("attendees", {
                     required: "Number of attendees is required",
-                    min: { value: 1, message: "Minimum 1 attendee" }
+                    min: { value: 1, message: "Minimum 1 attendee" },
                   })}
                   placeholder="e.g., 100"
                   className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 ${
@@ -289,7 +294,9 @@ export default function EditEventPage() {
                   }`}
                 />
                 {errors.attendees && (
-                  <p className="text-sm text-red-600">{errors.attendees.message}</p>
+                  <p className="text-sm text-red-600">
+                    {errors.attendees.message}
+                  </p>
                 )}
               </div>
 
@@ -317,7 +324,7 @@ export default function EditEventPage() {
                 </label>
                 <span className="text-sm text-gray-500">Optional</span>
               </div>
-              
+
               <div className="space-y-3">
                 {fields.map((field, index) => (
                   <div key={field.id} className="flex gap-2 items-center">
@@ -340,7 +347,7 @@ export default function EditEventPage() {
                   </div>
                 ))}
               </div>
-              
+
               <button
                 type="button"
                 onClick={() => append("")}
@@ -355,12 +362,16 @@ export default function EditEventPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-900">Location Details</h3>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Location Details
+                </h3>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Venue</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Venue
+                  </label>
                   <input
                     {...register("venue")}
                     placeholder="Conference Hall"
@@ -368,7 +379,9 @@ export default function EditEventPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">College</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    College
+                  </label>
                   <input
                     {...register("college")}
                     placeholder="College name"
@@ -376,7 +389,9 @@ export default function EditEventPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-700">Area</label>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Area
+                  </label>
                   <input
                     {...register("area")}
                     placeholder="City or region"
@@ -390,22 +405,30 @@ export default function EditEventPage() {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <CalendarClock className="w-5 h-5 text-gray-400" />
-                <h3 className="text-lg font-medium text-gray-900">Date & Time</h3>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Date & Time
+                </h3>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Start Date & Time */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Start</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Start
+                    </label>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <label className="text-xs text-gray-500">Date</label>
                         <input
                           type="date"
-                          {...register("startDate", { required: "Start date is required" })}
+                          {...register("startDate", {
+                            required: "Start date is required",
+                          })}
                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 ${
-                            errors.startDate ? "border-red-300" : "border-gray-300"
+                            errors.startDate
+                              ? "border-red-300"
+                              : "border-gray-300"
                           }`}
                         />
                       </div>
@@ -413,9 +436,13 @@ export default function EditEventPage() {
                         <label className="text-xs text-gray-500">Time</label>
                         <input
                           type="time"
-                          {...register("startTime", { required: "Start time is required" })}
+                          {...register("startTime", {
+                            required: "Start time is required",
+                          })}
                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 ${
-                            errors.startTime ? "border-red-300" : "border-gray-300"
+                            errors.startTime
+                              ? "border-red-300"
+                              : "border-gray-300"
                           }`}
                         />
                       </div>
@@ -431,15 +458,21 @@ export default function EditEventPage() {
                 {/* End Date & Time */}
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">End</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      End
+                    </label>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <label className="text-xs text-gray-500">Date</label>
                         <input
                           type="date"
-                          {...register("endDate", { required: "End date is required" })}
+                          {...register("endDate", {
+                            required: "End date is required",
+                          })}
                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 ${
-                            errors.endDate ? "border-red-300" : "border-gray-300"
+                            errors.endDate
+                              ? "border-red-300"
+                              : "border-gray-300"
                           }`}
                         />
                       </div>
@@ -447,9 +480,13 @@ export default function EditEventPage() {
                         <label className="text-xs text-gray-500">Time</label>
                         <input
                           type="time"
-                          {...register("endTime", { required: "End time is required" })}
+                          {...register("endTime", {
+                            required: "End time is required",
+                          })}
                           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors duration-200 ${
-                            errors.endTime ? "border-red-300" : "border-gray-300"
+                            errors.endTime
+                              ? "border-red-300"
+                              : "border-gray-300"
                           }`}
                         />
                       </div>

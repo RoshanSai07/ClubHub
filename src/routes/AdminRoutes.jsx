@@ -7,6 +7,7 @@ import { getUserById } from "@/firebase/collections";
 import AdminDashboard from "@/pages/admin/AdminDashboard";
 import AdminApprove from "@/pages/admin/AdminApprove";
 import ClubManagementPage from "@/pages/admin/ClubManagementPage";
+import Loader from "@/components/shared/Loader";
 
 const AdminRoutes = () => {
   const [loading, setLoading] = useState(true);
@@ -32,7 +33,9 @@ const AdminRoutes = () => {
     return () => unsub();
   }, []);
 
-  if (loading) return null;
+  if (allowed === null) {
+    return <Loader message="Checking Permissions..." />;
+  }
 
   if (!isAdmin) {
     return <Navigate to="/" replace />;
