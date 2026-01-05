@@ -89,7 +89,8 @@ const StudentDashboard = () => {
     events,
     ref,
     emptyMessage,
-    emptyIcon
+    emptyIcon,
+    variant
   ) => {
     if (events.length === 0) {
       return (
@@ -138,7 +139,7 @@ const StudentDashboard = () => {
               <div key={event.id} className="shrink-0 w-70">
                 <EventCard
                   {...event}
-                  variant="details"
+                  variant={variant}
                   path={`/student/events/${event.id}`}
                 />
 
@@ -233,7 +234,8 @@ const StudentDashboard = () => {
               upcomingEvents,
               registeredScrollRef,
               "No registered events",
-              <Calendar className="w-6 h-6 text-gray-400" />
+              <Calendar className="w-6 h-6 text-gray-400" />,
+              "details"  
             )}
           </div>
         </div>
@@ -346,7 +348,8 @@ const StudentDashboard = () => {
               pastEvents,
               pastScrollRef,
               "No past events",
-              <Clock className="w-6 h-6 text-gray-400" />
+              <Clock className="w-6 h-6 text-gray-400" />,
+              "feedback"
             )}
           </div>
         </div>
