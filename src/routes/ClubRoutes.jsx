@@ -8,7 +8,7 @@ import DraftEventsPage from "@/pages/club/ClubDraftEvents";
 import Settings from "@/pages/club/Settings";
 import NotFoundPage from "@/pages/public/NotFoundPage";
 import Announcements from "@/pages/club/AnnouncementsPage";
-import EventAnalytics from "@/pages/club/eventAnalytics";
+import EventAnalytics from "@/pages/club/EventAnalytics";
 import EventRegistrations from "@/pages/club/EventRegistrations";
 import ClubDraftEvents from "@/pages/club/ClubDraftEvents";
 import ClubAnalytics from "@/pages/club/ClubAnalytics";
