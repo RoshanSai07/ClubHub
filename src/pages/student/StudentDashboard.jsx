@@ -371,7 +371,7 @@ const StudentDashboard = () => {
             </div>
             <button
               onClick={() => window.location.href = studentInterests.length === 0 ? "/student/settings" : "/student"}
-              className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 whitespace-nowrap"
+              className="cursor-pointer px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 whitespace-nowrap"
             >
               {studentInterests.length === 0 ? "Set Interests" : "Browse Clubs"}
             </button>
